@@ -1,10 +1,15 @@
 const { Client } = require('pg')
-const connectionString = 'postgresql://postgres:h8970102742@localhost:5432/tamagotchi'
+const connectionString = 'postgresql://postgres:sql@localhost:5432/tamagotchi'
 
 class RestaurantRepository {
     constructor() {
         this.client = new Client({
-            connectionString: connectionString,
+            user: "postgres",
+            host: "localhost",
+            password: "sql",
+            database: "tamagotchi",
+            port: 5432
+            //connectionString: connectionString,
         })
     }
 
@@ -24,35 +29,26 @@ class RestaurantRepository {
 
     async getAccounts()
     {
-        var arrayAccounts = [];
-        //arrayAccounts.push()
-        var res = await this.client.query('SELECT * FROM tamagotchi.schema.accounts;');
+        const arrayAccounts = [];
+
+        const res = await this.client.query('SELECT * FROM tamagotchi.public.users;');
 
         res.rows.forEach(accountItem => {
-            var account = new AccountModel(accountItem.id, accountItem.fullname, accountItem.number);
+            const account = new AccountModel(accountItem.id, accountItem.login, accountItem.password, accountItem.role, accountItem.full_name);
             arrayAccounts.push(account);
         });
-
-        /* this.client.query('SELECT * FROM tamagotchi.schema.accounts;', (err, res) => {
-                if (err) {
-                console.log(err.stack)
-            } else {
-                res.rows.forEach(accountItem => {
-                    var account = new AccountModel(accountItem.id, accountItem.fullname, accountItem.number);
-                    arrayAccounts.push(account);
-                })
-            }
-        }); */
 
         return arrayAccounts;
     }
 }
 
 class AccountModel {
-    constructor(id, name, number) {
+    constructor(id, login, password, role, fullName) {
         this.id = id;
-        this.name = name;
-        this.number = number;
+        this.login = login;
+        this.password = password;
+        this.role = role;
+        this.fullName = fullName;
     }
 }
 
