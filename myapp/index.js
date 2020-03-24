@@ -1,15 +1,20 @@
 var express = require('express');
 var RestaurantRepository = require("./RestaurantRepository.js")
 
-var app = express();
-var restaurant = new RestaurantRepository();
+// environment variables
+process.env.NODE_ENV = 'development';
+
+const config = require('./config/config_setup.js');
+
+const app = express();
+const restaurant = new RestaurantRepository();
 restaurant.connect();
 
 app.get('/accounts', async (req, res) => {
-    var accounts = await restaurant.getAccounts();
+    const accounts = await restaurant.getAccounts();
     res.send(accounts);
 });
 
 app.listen(3000, function () {
-    console.log('Example app listening on port localhost:3000!');
+    console.log(`${global.gConfig.app_name} listening on port ${global.gConfig.node_port}`);
 });

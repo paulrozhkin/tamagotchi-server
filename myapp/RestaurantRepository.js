@@ -1,15 +1,13 @@
 const { Client } = require('pg')
-const connectionString = 'postgresql://postgres:sql@localhost:5432/tamagotchi'
 
 class RestaurantRepository {
     constructor() {
         this.client = new Client({
-            user: "postgres",
-            host: "localhost",
-            password: "sql",
-            database: "tamagotchi",
-            port: 5432
-            //connectionString: connectionString,
+            user: global.gConfig.database_user,
+            host: global.gConfig.database_host,
+            password: global.gConfig.database_host.database_password,
+            database: global.gConfig.database_name,
+            port: global.gConfig.database_port
         })
     }
 
