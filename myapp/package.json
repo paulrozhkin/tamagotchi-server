@@ -12,5 +12,8 @@
     "express": "^4.17.1",
     "lodash": "^4.17.15",
     "pg": "^7.18.2"
+  },
+  "devDependencies": {
+    "http-status-codes": "^1.4.0"
   }
 }
