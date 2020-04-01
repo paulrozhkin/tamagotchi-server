@@ -8,7 +8,7 @@ class RestaurantRepository {
         this._client = new Client({
             user: global.gConfig.database_user,
             host: global.gConfig.database_host,
-            password: global.gConfig.database_host.database_password,
+            password: global.gConfig.database_password,
             database: global.gConfig.database_name,
             port: global.gConfig.database_port
         });
