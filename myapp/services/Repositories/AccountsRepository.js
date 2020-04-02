@@ -31,10 +31,25 @@ class AccountsRepository extends BaseRepository {
         return await this.getAccount(newAccount.login);
     }
 
-    async getAccount(login) {
-        let newAccountResult = await this._client.query(`SELECT * FROM public.accounts WHERE login = '${login}';`);
-        newAccountResult = newAccountResult.rows[0];
-        return new AccountModel(newAccountResult.id, newAccountResult.login, newAccountResult.password, newAccountResult.role, newAccountResult.full_name, newAccountResult.is_blocked);
+    async getAccountByLogin(login) {
+        let getAccountResult = await this._client.query(`SELECT * FROM public.accounts WHERE login = '${login}';`);
+
+        if (getAccountResult.rowCount === 1) {
+            let account = getAccountResult.rows[0];
+            return new AccountModel(account.id, account.login, account.password, account.role, account.full_name, account.is_blocked);
+        } else {
+            return null;
+        }
+    }
+
+    async getAccount(id) {
+        let getAccountResult = await this._client.query(`SELECT * FROM public.accounts WHERE id = '${id}';`);
+        if (getAccountResult.rowCount === 1) {
+            let account = getAccountResult.rows[0];
+            return new AccountModel(account.id, account.login, account.password, account.role, account.full_name, account.is_blocked);
+        } else {
+            return null;
+        }
     }
 
     async checkExistAccount(login) {

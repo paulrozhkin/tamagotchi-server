@@ -31,4 +31,4 @@ class RestaurantRepository {
     }
 }
 
-module.exports = RestaurantRepository;
+module.exports = new RestaurantRepository();
