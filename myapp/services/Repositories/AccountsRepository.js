@@ -7,7 +7,7 @@ class AccountsRepository extends BaseRepository {
     async getAllAccounts() {
         const arrayAccounts = [];
 
-        const res = await this._client.query('SELECT * FROM public.users;');
+        const res = await this._client.query('SELECT * FROM public.accounts;');
 
         res.rows.forEach(accountItem => {
             const account = new AccountModel(accountItem.id, accountItem.login, accountItem.password, accountItem.role, accountItem.full_name, accountItem.is_blocked);
@@ -25,20 +25,20 @@ class AccountsRepository extends BaseRepository {
         await this.checkExistAccount(newAccount.login);
 
         // Create account
-        const sqlQuery = `INSERT INTO public.users (login, password) VALUES ('${newAccount.login}' , '${newAccount.password}')`;
+        const sqlQuery = `INSERT INTO public.accounts (login, password) VALUES ('${newAccount.login}' , '${newAccount.password}')`;
         await this._client.query(sqlQuery);
 
         return await this.getAccount(newAccount.login);
     }
 
     async getAccount(login) {
-        let newAccountResult = await this._client.query(`SELECT * FROM public.users WHERE login = '${login}';`);
+        let newAccountResult = await this._client.query(`SELECT * FROM public.accounts WHERE login = '${login}';`);
         newAccountResult = newAccountResult.rows[0];
         return new AccountModel(newAccountResult.id, newAccountResult.login, newAccountResult.password, newAccountResult.role, newAccountResult.full_name, newAccountResult.is_blocked);
     }
 
     async checkExistAccount(login) {
-        let newAccountResult = await this._client.query(`SELECT COUNT(*) FROM public.users WHERE login = '${login}';`);
+        let newAccountResult = await this._client.query(`SELECT COUNT(*) FROM public.accounts WHERE login = '${login}';`);
         let count = parseInt(newAccountResult.rows[0].count);
 
         if (count !== 0) {
