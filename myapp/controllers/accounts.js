@@ -4,11 +4,14 @@ const express = require('express')
     , passport = require("passport")
     , ROLES = require('../models/roles')
     , roleChecker = require('../middlewares/role-checker')
-    , jwt = require('jsonwebtoken');
+    , jwt = require('jsonwebtoken')
+    , HttpStatus = require('http-status-codes')
+    , AccountExistException = require('../models/Exceptions/AccountExistException.js');
 
 const restaurant = require('../services/RestaurantRepository');
 
 router.post("/authenticate", authenticate);
+router.post("/create", createAccount);
 router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Admin) , getAllAccounts);
 
 async function getAllAccounts(req, res) {
@@ -22,7 +25,7 @@ async function authenticate(req, res) {
     const login = req.body.login;
 
     if (!(login && password)) {
-        res.status(401).json({message: "No login or password"});
+        res.status(HttpStatus.UNAUTHORIZED).json({message: "No login or password"});
         return;
     }
 
@@ -34,10 +37,31 @@ async function authenticate(req, res) {
             const token = jwt.sign(payload, global.gConfig.secretOrKeyJwt);
             res.json({message: "ok", token: token});
         } else {
-            res.status(401).json({message: "passwords did not match"});
+            res.status(HttpStatus.UNAUTHORIZED).json({message: "passwords did not match"});
         }
     } else {
-        res.status(401).json({message: "no such user found"});
+        res.status(HttpStatus.UNAUTHORIZED).json({message: "no such user found"});
+    }
+}
+
+async function createAccount(req, res) {
+    try {
+        const jsonBody = req.body;
+        const newAccount = await restaurant.Accounts.createNewAccounts(new Account(undefined, jsonBody.login, jsonBody.password));
+        res.status(HttpStatus.CREATED).json(
+            {
+                id: newAccount.id,
+                login: newAccount.login
+            }
+        );
+    } catch (e) {
+        let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        if (e instanceof AccountExistException) {
+            statusCode = HttpStatus.FORBIDDEN;
+        }
+
+        res.status(statusCode).send("{ \"Error Status\" : \"" + statusCode + "\" , \"Message\" : \"" + e + "\" }");
     }
 }
 

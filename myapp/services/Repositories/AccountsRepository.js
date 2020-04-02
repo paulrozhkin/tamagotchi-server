@@ -19,8 +19,8 @@ class AccountsRepository extends BaseRepository {
 
     async createNewAccounts(newAccount) {
         // Check arguments
-        if (!newAccount.login.trim() && !newAccount.password.trim())
-            throw new Error("Argument exception");
+        if (!(newAccount.login && newAccount.password))
+            throw new Error("Argument exception. No login or password.");
 
         await this.checkExistAccount(newAccount.login);
 
@@ -28,7 +28,7 @@ class AccountsRepository extends BaseRepository {
         const sqlQuery = `INSERT INTO public.accounts (login, password) VALUES ('${newAccount.login}' , '${newAccount.password}')`;
         await this._client.query(sqlQuery);
 
-        return await this.getAccount(newAccount.login);
+        return await this.getAccountByLogin(newAccount.login);
     }
 
     async getAccountByLogin(login) {
