@@ -13,6 +13,7 @@ const JwtStrategy = passportJWT.Strategy;
 const RestaurantRepository = require("./services/RestaurantRepository.js");
 const AccountExistException = require('./models/Exceptions/AccountExistException.js');
 const AccountModel = require('./models/AccountModel');
+const ROLES = require('./models/roles');
 
 // environment variables
 process.env.NODE_ENV = 'development';
@@ -27,7 +28,8 @@ const users = [
     {
         id: 1,
         name: "jonathan",
-        password: "test"
+        password: "test",
+        role: 0
     }
 ];
 
@@ -58,7 +60,7 @@ app.use(bodyParser.json());
 const restaurant = new RestaurantRepository();
 restaurant.connect();
 
-app.post("/api/login", function (req, res) {
+app.post("/api/accounts/authenticate", function (req, res) {
     if (req.body.name && req.body.password) {
         var name = req.body.name;
         var password = req.body.password;
@@ -71,7 +73,7 @@ app.post("/api/login", function (req, res) {
     }
 
     if (user.password === password) {
-        var payload = {id: user.id};
+        var payload = {id: user.id, role: user.role};
         var token = jwt.sign(payload, jwtOptions.secretOrKey);
         res.json({message: "ok", token: token});
     } else {
@@ -79,30 +81,39 @@ app.post("/api/login", function (req, res) {
     }
 });
 
-app.get("/api/secretDebug", function (req, res, next) {
-    console.log(req.get('Authorization'));
-    next();
-}, function (req, res) {
-    res.json("debugging");
-});
+const checkIsInRole = (...roles) => (req, res, next) => {
+    let user = req.user;
 
-app.get("/api/secret", passport.authenticate("jwt", {session: false
-}), function (req, res) {
-    res.json("Success! You can not see this without a token");
-});
+    //roles.includes(user.role)
+    //const hasRole = roles.find(role => role === user.role);
+    if (user.role !== ROLES.Admin && !roles.includes(user.role)) {
+        return res.status(401).json({message: "No permission"})
+    }
 
-app.get('/api/accounts', async (req, res) => {
-    const accounts = await restaurant.Accounts.getAllAccounts();
-    res.send(accounts);
-});
+    return next()
+};
+
+app.get(
+    "/api/secret",
+    passport.authenticate("jwt", {session: false}),
+    function (req, res) {
+        res.json("Success! You can not see this without a token");
+    });
+
+app.get('/api/accounts',
+    passport.authenticate("jwt", {session: false}),
+    checkIsInRole(ROLES.Admin),
+    async (req, res) => {
+        const accounts = await restaurant.Accounts.getAllAccounts();
+        res.send(accounts);
+    });
 
 app.post('/api/accounts', async (req, res) => {
     try {
         const jsonBody = req.body;
         const newAccount = await restaurant.Accounts.createNewAccounts(new AccountModel(undefined, jsonBody.login, jsonBody.password));
         res.status(HttpStatus.CREATED).send(newAccount);
-    }
-    catch (e) {
+    } catch (e) {
         let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (e instanceof AccountExistException) {
