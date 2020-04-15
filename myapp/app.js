@@ -20,7 +20,11 @@ app.use(require('./controllers'));
 
 // Connect to database
 const restaurantRepository = require('./services/RestaurantRepository');
-restaurantRepository.connect();
+
+(async () => {
+    await restaurantRepository.createDatabaseIfNotExist();
+    restaurantRepository.connect();
+})();
 
 // Start app
 app.listen(global.gConfig.node_port, function () {

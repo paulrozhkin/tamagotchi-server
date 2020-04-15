@@ -12,7 +12,7 @@ const restaurant = require('../services/RestaurantRepository');
 
 router.post("/authenticate", authenticate);
 router.post("/create", createAccount);
-router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Admin) , getAllAccounts);
+router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager) , getAllAccounts);
 
 async function getAllAccounts(req, res) {
     const accounts = await restaurant.Accounts.getAllAccounts();
@@ -44,14 +44,36 @@ async function authenticate(req, res) {
     }
 }
 
+async function updateAccount(req, res) {
+    /*
+    if (jsonBody.role) {
+        if (!jsonBody.user || jsonBody.user.role !== 'manager') {
+            res.status(HttpStatus.UNAUTHORIZED).json({message: "Only managers can create accounts with roles."});
+            return;
+        }
+
+        role = jsonBody.role;
+    }
+     */
+}
+
 async function createAccount(req, res) {
     try {
         const jsonBody = req.body;
-        const newAccount = await restaurant.Accounts.createNewAccounts(new Account(undefined, jsonBody.login, jsonBody.password));
+        const password = jsonBody.password;
+        const login = jsonBody.login;
+
+        if (!(login && password)) {
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: "No login or password"});
+            return;
+        }
+
+        let newAccountData = new Account(undefined, login, password)
+
+        const newAccount = await restaurant.Accounts.createNewAccounts(newAccountData);
         res.status(HttpStatus.CREATED).json(
             {
-                id: newAccount.id,
-                login: newAccount.login
+                id: newAccount.id
             }
         );
     } catch (e) {
@@ -61,7 +83,7 @@ async function createAccount(req, res) {
             statusCode = HttpStatus.FORBIDDEN;
         }
 
-        res.status(statusCode).send("{ \"Error Status\" : \"" + statusCode + "\" , \"Message\" : \"" + e + "\" }");
+        res.status(statusCode).json({message:e.toString()});
     }
 }
 

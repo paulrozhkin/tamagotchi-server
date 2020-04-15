@@ -5,7 +5,7 @@ const ROLES = require('../models/roles');
 const checkIsInRole = (...roles) => (req, res, next) => {
     let user = req.user;
 
-    if (user.role !== ROLES.Admin && !roles.includes(user.role)) {
+    if (user.role !== ROLES.Manager && !roles.includes(user.role)) {
         return res.status(HttpStatus.UNAUTHORIZED).json({message: "No permission"})
     }
 
