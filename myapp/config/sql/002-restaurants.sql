@@ -10,7 +10,8 @@ create table public.restaurants
 	photos integer[],
 	is_parking_present boolean,
 	is_card_payment_present boolean,
-	is_wifi_present boolean
+	is_wifi_present boolean,
+	is_deleted boolean
 );
 
 alter table public.restaurants owner to postgres;

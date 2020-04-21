@@ -33,7 +33,7 @@ async function authenticate(req, res) {
             res.status(HttpStatus.UNAUTHORIZED).json({message: "passwords did not match"});
         }
     } else {
-        res.status(HttpStatus.UNAUTHORIZED).json({message: "no such user found"});
+        res.status(HttpStatus.NOT_FOUND).json({message: "no such user found"});
     }
 }
 

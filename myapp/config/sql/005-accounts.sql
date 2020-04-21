@@ -13,7 +13,7 @@ create table public.accounts
 	avatar integer
 		constraint users_files_id_fk
 			references public.files,
-	is_blocked integer,
+	is_blocked boolean,
 	full_name text
 );
 

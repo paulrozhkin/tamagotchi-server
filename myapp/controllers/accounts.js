@@ -10,8 +10,19 @@ const express = require('express')
 
 const restaurant = require('../services/RestaurantRepository');
 
-router.post("/create", createAccount);
-router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager) , getAllAccounts);
+router.post("/", addAccount);
+router.get('/:uid', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), getAccountById);
+router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), getAllAccounts);
+router.delete("/:uid", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), deleteAccount)
+router.put("/", passport.authenticate("jwt", {session: false}), updateAccount)
+
+async function deleteAccount() {
+
+}
+
+async function getAccountById() {
+
+}
 
 async function getAllAccounts(req, res) {
     const accounts = await restaurant.Accounts.getAllAccounts();
@@ -31,7 +42,7 @@ async function updateAccount(req, res) {
      */
 }
 
-async function createAccount(req, res) {
+async function addAccount(req, res) {
     try {
         const jsonBody = req.body;
         const password = jsonBody.password;

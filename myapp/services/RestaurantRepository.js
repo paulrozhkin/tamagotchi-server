@@ -1,5 +1,6 @@
 const { Client } = require('pg');
 const AccountsRepository = require('../services/Repositories/AccountsRepository');
+const RestaurantsRepository = require('./Repositories/RestaurantsRepository');
 const fs = require('fs');
 
 class RestaurantRepository {
@@ -15,6 +16,7 @@ class RestaurantRepository {
         });
 
         this.Accounts = new AccountsRepository(this._client);
+        this.Restaurants = new RestaurantsRepository(this._client);
     }
 
     connect() {

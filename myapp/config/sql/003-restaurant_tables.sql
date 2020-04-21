@@ -10,7 +10,7 @@ create table restaurant_tables
 			references restaurants,
 	photos int[],
 	number_of_places int not null,
-	is_deleted int
+	is_deleted boolean
 );
 
 alter table public.restaurant_tables owner to postgres;
