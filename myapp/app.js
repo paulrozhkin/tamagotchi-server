@@ -7,6 +7,7 @@ const app = express();
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const auth = require('./middlewares/auth'); // Init auth. Don't delete.
+const fileUpload = require('express-fileupload');
 
 // Passport init for authentication.
 app.use(passport.initialize());
@@ -14,6 +15,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
+// Create file upload
+app.use(fileUpload());
 
 // Create routes.
 app.use(require('./controllers'));

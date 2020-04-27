@@ -8,6 +8,7 @@
         "database_user": "postgres",
         "database_port": "5432",
         "database_password": "sql",
-        "secretOrKeyJwt": "557C3FC82F68572774A392C865F8B3A32EA49B78B23D52628F46E3E87EC0F3F3"
+        "secretOrKeyJwt": "557C3FC82F68572774A392C865F8B3A32EA49B78B23D52628F46E3E87EC0F3F3",
+        "files_path": "C:\\temp\\tamagotchi_server_files"
     }
 }
