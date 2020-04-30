@@ -1,10 +1,10 @@
-const AccountModel = require("./AccountModel")
+const UserModel = require("./UserModel")
 
-class AccountModelWithPassword extends AccountModel{
+class UserModelWithPassword extends UserModel{
     constructor(id, login, password, role, avatar, fullName, isBlocked) {
         super(id, login, role, avatar, fullName, isBlocked);
         this.password = password
     }
 }
 
-module.exports = AccountModelWithPassword
+module.exports = UserModelWithPassword

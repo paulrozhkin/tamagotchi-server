@@ -1,5 +1,5 @@
 const { Client } = require('pg');
-const AccountsRepository = require('../services/Repositories/AccountsRepository');
+const UsersRepository = require('../services/Repositories/UsersRepository');
 const RestaurantsRepository = require('./Repositories/RestaurantsRepository');
 const FilesRepository = require('./Repositories/FilesRepository')
 const fs = require('fs');
@@ -16,7 +16,7 @@ class RestaurantRepository {
             port: global.gConfig.database_port
         });
 
-        this.Accounts = new AccountsRepository(this._client);
+        this.Users = new UsersRepository(this._client);
         this.Restaurants = new RestaurantsRepository(this._client);
         this.Files = new FilesRepository(this._client);
     }

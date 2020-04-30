@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 const HttpStatus = require('http-status-codes')
-const AccountExistException = require('../models/Exceptions/AccountExistException.js')
+const UserExistException = require('../models/Exceptions/UserExistException.js')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
 const NotFoundException = require('../models/Exceptions/NotFoundException')
 
@@ -21,7 +21,7 @@ async function authenticate(req, res) {
     }
 
     try {
-        const user = await restaurant.Accounts.getAccountWithPasswordByLogin(login);
+        const user = await restaurant.Users.getUserWithPasswordByLogin(login);
 
         if (user.password === password) {
             const payload = {id: user.id, role: user.role};

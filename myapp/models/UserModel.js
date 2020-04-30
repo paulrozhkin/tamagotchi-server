@@ -1,4 +1,4 @@
-class AccountModel {
+class UserModel {
     constructor(id, login, role, avatar, fullName, isBlocked) {
         this.id = id;
         this.login = login;
@@ -9,4 +9,4 @@ class AccountModel {
     }
 }
 
-module.exports = AccountModel;
+module.exports = UserModel;

@@ -1,7 +1,7 @@
 const HttpStatus =  require("http-status-codes");
 const ROLES = require('../models/roles');
 
-// Middleware function for check account role in router.
+// Middleware function for check user role in router.
 const checkIsInRole = (...roles) => (req, res, next) => {
     let user = req.user;
 
