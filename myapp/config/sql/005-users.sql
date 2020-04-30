@@ -2,7 +2,7 @@ create type roles as enum ('Manager', 'Client', 'Waiter', 'Cook');
 
 alter type roles owner to postgres;
 
-create table public.accounts
+create table public.users
 (
 	id serial not null
 		constraint users_pk
@@ -17,8 +17,8 @@ create table public.accounts
 	full_name text
 );
 
-alter table public.accounts owner to postgres;
+alter table public.users owner to postgres;
 
-create unique index accounts_login_uindex
-	on public.accounts (login);
+create unique index users_login_uindex
+	on public.users (login);
 
