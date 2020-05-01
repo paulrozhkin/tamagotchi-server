@@ -10,5 +10,17 @@
         "database_password": "sql",
         "secretOrKeyJwt": "557C3FC82F68572774A392C865F8B3A32EA49B78B23D52628F46E3E87EC0F3F3",
         "files_path": "C:\\temp\\tamagotchi_server_files"
+    },
+    "deployment": {
+        "config_id": "deployment",
+        "app_name": "Restaurant application",
+        "node_port": 3000,
+        "database_name": "tamagotchi",
+        "database_host": "localhost",
+        "database_user": "postgres",
+        "database_port": "5432",
+        "database_password": "sql",
+        "secretOrKeyJwt": "557C3FC82F68572774A392C865F8B3A32EA49B78B23D52628F46E3E87EC0F3F3",
+        "files_path": "/usr/tamagotchi/tamagotchi_server_files"
     }
 }

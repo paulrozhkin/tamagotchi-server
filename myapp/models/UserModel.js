@@ -1,13 +1,12 @@
-class AccountModel {
-
-    constructor(id, login, password, role, fullName, isBlocked) {
+class UserModel {
+    constructor(id, login, role, avatar, fullName, isBlocked) {
         this.id = id;
         this.login = login;
-        this.password = password;
         this.role = role;
+        this.avatar = avatar
         this.fullName = fullName;
         this.isBlocked = isBlocked;
     }
 }
 
-module.exports = AccountModel;
+module.exports = UserModel;

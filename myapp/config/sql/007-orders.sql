@@ -7,8 +7,8 @@ create table public.orders
 		constraint orders_restaurants_id_fk
 			references public.restaurants,
 	client integer
-		constraint orders_accounts_id_fk
-			references public.accounts,
+		constraint orders_users_id_fk
+			references public.users,
 	dishes integer[],
 	is_paid boolean not null,
 	visit_time daterange not null,
