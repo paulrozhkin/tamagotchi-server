@@ -1,4 +1,4 @@
-const BaseRepository = require('./BaseRepository');
+const BaseRepository = require('./BaseRepository')
 const RestaurantPropertiesException = require('../../models/Exceptions/RestaurantPropertiesException')
 const RestaurantExistException = require('../../models/Exceptions/RestaurantExistException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
@@ -9,7 +9,7 @@ class RestaurantsRepository extends BaseRepository {
     _table = 'public.restaurants'
 
     async getAll() {
-        const result = await this._client.query(`SELECT * FROM ${this._table};`);
+        const result = await this._client.query(`SELECT * FROM ${this._table};`)
 
         const restaurants = []
         result.rows.forEach(restaurantRow => {
@@ -24,11 +24,11 @@ class RestaurantsRepository extends BaseRepository {
 
         let checkExistResult = await this._client.query(`SELECT COUNT(*) 
         FROM ${this._table} 
-        WHERE position_latitude = '${restaurant.positionLatitude}' and position_longitude = '${restaurant.positionLongitude}'`);
-        let count = parseInt(checkExistResult.rows[0].count);
+        WHERE position_latitude = '${restaurant.positionLatitude}' and position_longitude = '${restaurant.positionLongitude}'`)
+        let count = parseInt(checkExistResult.rows[0].count)
 
         if (count !== 0) {
-            throw new RestaurantExistException();
+            throw new RestaurantExistException()
         }
 
         const query = `
@@ -52,16 +52,16 @@ class RestaurantsRepository extends BaseRepository {
     }
 
     async getById(id) {
-        let result = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}';`);
+        let result = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}';`)
         if (result.rowCount > 0) {
             return this._getRestaurantFromRow(result.rows[0])
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException()
         }
     }
 
     _getRestaurantFromRow(row) {
-        return  new RestaurantModel(row.id, row.address,
+        return new RestaurantModel(row.id, row.address,
             row.position_latitude, row.position_longitude,
             row.is_parking_present, row.is_card_payment_present,
             row.is_wifi_present, row.photos,
@@ -70,4 +70,4 @@ class RestaurantsRepository extends BaseRepository {
     }
 }
 
-module.exports = RestaurantsRepository;
+module.exports = RestaurantsRepository

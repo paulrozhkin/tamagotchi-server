@@ -6,33 +6,32 @@ const UserExistException = require('../models/Exceptions/UserExistException.js')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
 const NotFoundException = require('../models/Exceptions/NotFoundException')
 
-const restaurant = require('../services/RestaurantRepository');
+const restaurant = require('../services/RestaurantRepository')
 
-router.post("/", authenticate);
+router.post("/", authenticate)
 
 async function authenticate(req, res) {
 
-    const password = req.body.password;
-    const login = req.body.login;
+    const password = req.body.password
+    const login = req.body.login
 
     if (!(login && password)) {
-        res.status(HttpStatus.BAD_REQUEST).json({message: "No login or password"});
-        return;
+        res.status(HttpStatus.BAD_REQUEST).json({message: "No login or password"})
+        return
     }
 
     try {
-        const user = await restaurant.Users.getUserWithPasswordByLogin(login);
+        const user = await restaurant.Users.getUserWithPasswordByLogin(login)
 
         if (user.password === password) {
-            const payload = {id: user.id, role: user.role};
-            const token = jwt.sign(payload, global.gConfig.secretOrKeyJwt);
+            const payload = {id: user.id, role: user.role}
+            const token = jwt.sign(payload, global.gConfig.secretOrKeyJwt)
             const {password, ...userWithoutPassword} = user
-            res.json({...userWithoutPassword, token});
+            res.json({...userWithoutPassword, token})
         } else {
-            res.status(HttpStatus.UNAUTHORIZED).json(new ErrorMessageModel("Authentication failed. Wrong password."));
+            res.status(HttpStatus.UNAUTHORIZED).json(new ErrorMessageModel("Authentication failed. Wrong password."))
         }
-    }
-    catch (e) {
+    } catch (e) {
         if (e instanceof NotFoundException) {
             res.status(HttpStatus.NOT_FOUND).json(new ErrorMessageModel("Authentication failed. User not found."))
         } else {
@@ -41,4 +40,4 @@ async function authenticate(req, res) {
     }
 }
 
-module.exports = router;
+module.exports = router

@@ -3,4 +3,4 @@ module.exports = {
     Client: "Client",
     Waiter: "Waiter",
     Cook: "Cook"
-};
+}

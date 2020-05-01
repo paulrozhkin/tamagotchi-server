@@ -3,7 +3,7 @@ const router = express.Router()
 const passport = require("passport")
 const ROLES = require('../models/roles')
 const roleChecker = require('../middlewares/role-checker')
-const HttpStatus = require('http-status-codes');
+const HttpStatus = require('http-status-codes')
 const RestaurantCreateModel = require('../models/RestaurantCreateModel')
 const RestaurantUpdatableInfoModel = require('../models/RestaurantUpdatableInfoModel')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
@@ -11,11 +11,11 @@ const RestaurantPropertiesException = require('../models/Exceptions/RestaurantPr
 const RestaurantExistException = require('../models/Exceptions/RestaurantExistException')
 const NotFoundException = require('../models/Exceptions/NotFoundException')
 
-const restaurantRepository = require('../services/RestaurantRepository');
+const restaurantRepository = require('../services/RestaurantRepository')
 
-router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createRestaurant);
-router.get('/', passport.authenticate("jwt", {session: false}), getAllRestaurant);
-router.get('/:id', passport.authenticate("jwt", {session: false}), getRestaurantById);
+router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createRestaurant)
+router.get('/', passport.authenticate("jwt", {session: false}), getAllRestaurant)
+router.get('/:id', passport.authenticate("jwt", {session: false}), getRestaurantById)
 router.put("/:id", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), updateRestaurant)
 
 async function getAllRestaurant(req, res) {
@@ -99,4 +99,4 @@ async function updateRestaurant(req, res) {
     }
 }
 
-module.exports = router;
+module.exports = router

@@ -1,9 +1,8 @@
 class BaseRepository {
-    _client;
-
-    constructor(dbClient) {
-        this._client = dbClient;
+    constructor(dbClient, tableName) {
+        this._client = dbClient
+        this._table = tableName
     }
 }
 
-module.exports = BaseRepository;
+module.exports = BaseRepository

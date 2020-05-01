@@ -1,32 +1,32 @@
-const passport = require("passport");
-const passportJWT = require("passport-jwt");
+const passport = require("passport")
+const passportJWT = require("passport-jwt")
 
-const ExtractJwt = passportJWT.ExtractJwt;
-const JwtStrategy = passportJWT.Strategy;
+const ExtractJwt = passportJWT.ExtractJwt
+const JwtStrategy = passportJWT.Strategy
 
-const restaurant = require('../services/RestaurantRepository');
+const restaurant = require('../services/RestaurantRepository')
 
 // Jwt init
-const jwtOptions = {};
-jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-jwtOptions.secretOrKey = global.gConfig.secretOrKeyJwt;
+const jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+jwtOptions.secretOrKey = global.gConfig.secretOrKeyJwt
 
 // Jwt authenticate strategy.
 const strategy = new JwtStrategy(jwtOptions, async function (jwt_payload, next) {
-    console.log('payload received', jwt_payload);
+    console.log('payload received', jwt_payload)
 
-    let user  = await restaurant.Users.getById(jwt_payload.id);
+    let user = await restaurant.Users.getById(jwt_payload.id)
 
     if (user) {
         if (!user.isBlocked)
-            next(null, user);
+            next(null, user)
         else
-            next(null, false);
+            next(null, false)
     } else {
-        next(null, false);
+        next(null, false)
     }
-});
+})
 
-passport.use("jwt", strategy);
+passport.use("jwt", strategy)
 
-module.exports = passport;
+module.exports = passport

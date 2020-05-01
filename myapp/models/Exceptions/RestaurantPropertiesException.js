@@ -1,8 +1,8 @@
 function RestaurantPropertiesException() {
-    this.message = "Restaurant properties not set.";
-    this.toString = function() {
+    this.message = "Restaurant properties not set."
+    this.toString = function () {
         return this.message
-    };
+    }
 }
 
-module.exports = RestaurantPropertiesException;
+module.exports = RestaurantPropertiesException
