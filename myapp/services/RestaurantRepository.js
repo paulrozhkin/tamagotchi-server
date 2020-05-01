@@ -5,8 +5,6 @@ const FilesRepository = require('./Repositories/FilesRepository')
 const fs = require('fs')
 
 class RestaurantRepository {
-    _client
-
     constructor() {
         this._client = new Client({
             user: global.gConfig.database_user,
