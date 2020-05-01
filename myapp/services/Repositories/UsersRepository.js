@@ -8,36 +8,50 @@ class UsersRepository extends BaseRepository {
 
     _table = "public.users"
 
-    async getAllUsers() {
-        /*const arrayUsers = [];
+    async getAll() {
+        const arrayUsers = [];
 
-        const res = await this._client.query(`SELECT * FROM ${this._table};`);
+        const res = await this._client.query(`SELECT id, login, role, avatar, is_blocked, full_name FROM ${this._table};`);
 
         res.rows.forEach(UserItem => {
             const User = new UserModel(UserItem.id, UserItem.login,
-                UserItem.password, UserItem.role,
-                UserItem.full_name, UserItem.is_blocked);
+                UserItem.role, UserItem.avatar, UserItem.full_name, UserItem.is_blocked);
 
             arrayUsers.push(User);
         });
 
-        return arrayUsers;*/
+        return arrayUsers;
     }
 
-    async createNewUsers(newUser) {
+    async update(id, updateInfo) {
+        if (!(await this.getById(id))) {
+            throw new NotFoundException()
+        }
+
+        const query = `
+        UPDATE ${this._table} SET (login, role, password, avatar, full_name, is_blocked)
+         = ('${updateInfo.login}', '${updateInfo.role}', 
+         '${updateInfo.password}', '${updateInfo.avatar}', '${updateInfo.fullName}', '${updateInfo.isBlocked}') 
+         WHERE id = ${id}`
+
+        await this._client.query(query)
+        return await this.getById(id)
+    }
+
+    async add(login, password) {
         // Check arguments
-        /*if (!(newUser.login && newUser.password))
+        if (!(login && password))
             throw new Error("Argument exception. No login or password.");
 
-        await this.checkExistUser(newUser.login);
+        await this.checkExistUser(login);
 
         // Create User
-        const sqlQuery = `INSERT INTO ${this._table} (login, password) VALUES ('${newUser.login}',
-         '${newUser.password}')`;
+        const sqlQuery = `INSERT INTO ${this._table} (login, password) VALUES ('${login}',
+         '${password}') RETURNING id, login, full_name, role, avatar, is_blocked`;
 
-        await this._client.query(sqlQuery);
-        return await this.getUserByLogin(newUser.login);
-        */
+        const result = await this._client.query(sqlQuery);
+        const row = result.rows[0]
+        return  new UserModel(row.id, row.login, row.role, row.avatar, row.full_name, row.is_blocked)
     }
 
     async getUserWithPasswordByLogin(login) {
@@ -55,14 +69,14 @@ class UsersRepository extends BaseRepository {
             User.is_blocked);
     }
 
-    async getUser(id) {
-        /*let getUserResult = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}';`);
-        if (getUserResult.rowCount === 1) {
-            let User = getUserResult.rows[0];
-            return new UserModel(User.id, User.login, User.password, User.role, User.avatar, User.full_name, User.is_blocked);
-        } else {
-            return null;
-        }*/
+    async getById(id) {
+        let getUserResult = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}';`);
+        if (getUserResult.rowCount === 0) {
+            throw new NotFoundException()
+        }
+
+        let user = getUserResult.rows[0];
+        return new UserModel(user.id, user.login, user.role, user.avatar, user.full_name, user.is_blocked);
     }
 
     async checkExistUser(login) {

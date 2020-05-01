@@ -51,14 +51,6 @@ class RestaurantsRepository extends BaseRepository {
         return await this.getById(id)
     }
 
-    async delete(id) {
-        let result = await this._client.query(`DELETE FROM ${this._table} WHERE id = '${id}';`);
-
-        if (result.rowCount === 0) {
-            throw new NotFoundException()
-        }
-    }
-
     async getById(id) {
         let result = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}';`);
         if (result.rowCount > 0) {

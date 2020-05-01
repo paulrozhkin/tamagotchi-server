@@ -16,7 +16,6 @@ const restaurantRepository = require('../services/RestaurantRepository');
 router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createRestaurant);
 router.get('/', passport.authenticate("jwt", {session: false}), getAllRestaurant);
 router.get('/:id', passport.authenticate("jwt", {session: false}), getRestaurantById);
-router.delete("/:id", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), deleteRestaurant)
 router.put("/:id", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), updateRestaurant)
 
 async function getAllRestaurant(req, res) {
