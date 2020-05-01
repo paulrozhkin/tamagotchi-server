@@ -6,8 +6,6 @@ const RestaurantModel = require('../../models/RestaurantModel')
 
 class RestaurantsRepository extends BaseRepository {
 
-    _table = 'public.restaurants'
-
     async getAll() {
         const result = await this._client.query(`SELECT * FROM ${this._table};`)
 
