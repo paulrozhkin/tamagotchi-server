@@ -13,7 +13,7 @@ It also provides an opportunity for the administration to manage the infrastruct
 ---
 
 ## Linked Repositories
-- [Android client application](https://github.com/paulrozhkin/NodeJsTamagotchiServer)
+- [Android client application](https://github.com/paulrozhkin/RestaurantClientApplication)
 - [Android stuff application](https://github.com/ForsaiR/RestaurantEmployerApplication)
 ---
 
