@@ -1,0 +1,954 @@
+openapi: 3.0.0
+info:
+  title: Tamagotchi Server API
+  description: |
+    This is the API for a course project at ITMO University. The theme of the course is “Restaurant-application for Android for ordering food and tables”
+    [Server on github.](https://github.com/BlackIIIFOX/NodeJsTamagotchiServer)
+  contact:
+    email: blackiiifox@gmail.com
+  version: 0.2.0
+servers:
+- url: https://virtserver.swaggerhub.com/paul-rozhkin/itmo-tamagotchi/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://petstore.swagger.io/v2
+- url: http://316825-blackiiifox.tmweb.ru:3000/api/
+tags:
+- name: auth
+  description: Endpoint for authentication.
+- name: account
+  description: Endrpoint for working with current account.
+- name: users
+  description: Endpoint for working with user.
+- name: files
+  description: Endpoint for working with files.
+- name: restaurants
+  description: Endrpoint for working with restaurants.
+- name: tables
+  description: Endrpoint for working with tables in cocrete restaurant.
+paths:
+  /restaurants/:
+    get:
+      tags:
+      - restaurants
+      summary: Get all restauratns
+      operationId: getRestaurants
+      responses:
+        "200":
+          description: Array of restaurants
+          content:
+            application-json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/restaurant'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - restaurants
+      summary: Create a new restaurant.
+      operationId: createRestaurant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/restaurantCreateInfo'
+        required: true
+      responses:
+        "201":
+          description: Restaurant was created.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/restaurant'
+        "400":
+          description: Properties not set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "409":
+          description: Restaurant already exist on this position.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /restaurants/{id}:
+    get:
+      tags:
+      - restaurants
+      summary: Get a restaurant by {id}.
+      operationId: getRestaurantById
+      parameters:
+      - name: id
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Restaurant.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/restaurant'
+        "401":
+          description: Unauthorized.
+        "404":
+          description: Restaurant not found by id.
+        "500":
+          description: Internal Server Error.
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - restaurants
+      summary: Update a restaurant.
+      operationId: updateRestaurant
+      parameters:
+      - name: id
+        in: path
+        description: Resturant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/restaurantUpdatableInfo'
+        required: true
+      responses:
+        "200":
+          description: Restaurant was updated.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/restaurant'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /resturants/{restaurantId}/tables/:
+    get:
+      tags:
+      - tables
+      summary: '[NOT IMPLEMENTED] Get all tables in restaurant'
+      operationId: getRestaurantTables
+      parameters:
+      - name: restaurantId
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Array of tables
+          content:
+            application-json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/table'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - tables
+      summary: '[NOT IMPLEMENTED] Create a new table in restaurant.'
+      operationId: createRestaurantTable
+      parameters:
+      - name: restaurantId
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tableCreateInfo'
+        required: true
+      responses:
+        "201":
+          description: Table was created.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/table'
+        "400":
+          description: Properties not set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can create
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: Restaurant not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /resturants/{restaurantId}/tables/{id}:
+    get:
+      tags:
+      - tables
+      summary: '[NOT IMPLEMENTED] Get a table by {id}.'
+      operationId: getTableById
+      parameters:
+      - name: restaurantId
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: id
+        in: path
+        description: Table id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/table'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: Table not found by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - tables
+      summary: '[NOT IMPLEMENTED] Update a table.'
+      description: Update a table. The `id` is never updated.
+      operationId: updateRestaurantTable
+      parameters:
+      - name: restaurantId
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: id
+        in: path
+        description: Table id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/table'
+        required: true
+      responses:
+        "200":
+          description: Table was updated.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/table'
+        "400":
+          description: Id cannot be updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: Table not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - tables
+      summary: '[NOT IMPLEMENTED] Delete a table in restaurant by {id}.'
+      operationId: deleteTableById
+      parameters:
+      - name: restaurantId
+        in: path
+        description: Restaurant id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: id
+        in: path
+        description: Table id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Table was deleted.
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can delete.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: Table not found by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /files/:
+    post:
+      tags:
+      - files
+      summary: Upload new file to server.
+      operationId: uploadFile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "201":
+          description: File uploaded.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/fileInfo'
+        "400":
+          description: The file is not in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /files/{id}:
+    get:
+      tags:
+      - files
+      summary: Download file by {id}.
+      operationId: downloadFile
+      parameters:
+      - name: id
+        in: path
+        description: File id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: File
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: File not found by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /auth/:
+    post:
+      tags:
+      - auth
+      summary: Authentication in the system.
+      operationId: auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/creditionals'
+        required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/userWithJWT'
+        "400":
+          description: No login or password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "401":
+          description: Authentication failed. Wrong password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+  /users/:
+    get:
+      tags:
+      - users
+      summary: Get all users
+      operationId: getUsers
+      responses:
+        "200":
+          description: Array of users
+          content:
+            application-json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Only manager can get all.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - users
+      summary: Create a new user.
+      description: Create a new user is system. Role by default - `client`.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/creditionals'
+        required: true
+      responses:
+        "201":
+          description: User was created.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Login or password not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "409":
+          description: User already exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+  /account/:
+    get:
+      tags:
+      - account
+      summary: Get current account.
+      description: Returns account information. The token identifies the account.
+      operationId: getCurrentAccount
+      responses:
+        "200":
+          description: User was created.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+  /users/{id}:
+    get:
+      tags:
+      - users
+      summary: Get a user by {id}.
+      operationId: getUserById
+      parameters:
+      - name: id
+        in: path
+        description: User id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: User was created.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: User not found by id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - users
+      summary: Update a user.
+      description: Update a user.
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        description: User id.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userUpdatableInfoWithPassword'
+        required: true
+      responses:
+        "200":
+          description: User was updated.
+          content:
+            application-json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: User with new login already exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "403":
+          description: Forbidden. Manager can update everyone, others can update themselves.
+            Property `role, isBlocked` can update only manager.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+        "500":
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorModel'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    creditionals:
+      required:
+      - login
+      - password
+      type: object
+      properties:
+        login:
+          type: string
+          description: User login for auth or registration
+          example: johnsmit
+        password:
+          type: string
+          description: Password in md5
+          example: 827ccb0eea8a706c4c34a16891f84e7b
+    userUpdatableInfo:
+      type: object
+      properties:
+        login:
+          type: string
+          description: User name
+          example: johnsmit@gmail.com
+        fullName:
+          type: string
+          description: Real user name
+          nullable: true
+          example: John Smit
+        role:
+          $ref: '#/components/schemas/role'
+        avatar:
+          type: integer
+          description: 'User icon. You can get the icon along the path: \files\{avatar}'
+          format: integer
+          nullable: true
+          example: 5123
+        isBlocked:
+          type: boolean
+          description: User is blocked.
+          example: false
+    user:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/userUpdatableInfo'
+      - type: object
+        properties:
+          id:
+            type: integer
+            description: Unique user identifier.
+            example: 12331
+    userUpdatableInfoWithPassword:
+      allOf:
+      - $ref: '#/components/schemas/userUpdatableInfo'
+      - type: object
+        properties:
+          password:
+            type: string
+            description: User password in md5.
+    userWithJWT:
+      description: User with jwt.
+      allOf:
+      - $ref: '#/components/schemas/user'
+      - type: object
+        properties:
+          token:
+            type: string
+            description: Jwt token.
+            example: b08f86af-35da-48f2-8fab-cef3904660bd
+    role:
+      type: string
+      description: User role in system. Define user privileges in the system.
+      example: Manager
+      enum:
+      - Manager
+      - Client
+      - Cook
+      - Waiter
+    fileInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: file id
+          example: 2123
+        name:
+          type: string
+          description: file id
+          example: newFile.jpg
+        type:
+          type: string
+          description: file id
+          example: image/jpg
+    table:
+      allOf:
+      - $ref: '#/components/schemas/tableCreateInfo'
+      - type: object
+        properties:
+          id:
+            type: integer
+            description: Table id.
+    tableCreateInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Table name
+        photos:
+          type: array
+          description: Table photos - id files.
+          nullable: true
+          items:
+            type: integer
+        numberOfPlaces:
+          type: integer
+          description: The number of seats at the table.
+        isDeleted:
+          type: boolean
+          description: Table was deleted
+    restaurantUpdatableInfo:
+      type: object
+      properties:
+        isParkingPresent:
+          type: boolean
+        isCardPaymentPresent:
+          type: boolean
+        isWifiPresent:
+          type: boolean
+        isDeleted:
+          type: boolean
+        photos:
+          type: array
+          description: Restaurant photos - id files.
+          nullable: true
+          items:
+            type: integer
+    restaurant:
+      allOf:
+      - $ref: '#/components/schemas/restaurantCreateInfo'
+      - $ref: '#/components/schemas/restaurantUpdatableInfo'
+      - type: object
+        properties:
+          id:
+            type: integer
+    errorModel:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error description.
+    restaurantCreateInfo:
+      type: object
+      properties:
+        address:
+          type: string
+          description: Restaurant address.
+        positionLatitude:
+          type: number
+          description: Latitude positon on map
+          format: double
+        positionLongitude:
+          type: number
+          description: Longitude positon on map
+          format: double
+    body:
+      type: object
+      properties:
+        file:
+          type: array
+          items:
+            type: string
+            format: binary
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
