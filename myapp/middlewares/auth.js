@@ -15,14 +15,15 @@ jwtOptions.secretOrKey = global.gConfig.secretOrKeyJwt
 const strategy = new JwtStrategy(jwtOptions, async function (jwt_payload, next) {
     console.log('payload received', jwt_payload)
 
-    let user = await restaurant.Users.getById(jwt_payload.id)
+    try {
+        let user = await restaurant.Users.getById(jwt_payload.id)
 
-    if (user) {
         if (!user.isBlocked)
             next(null, user)
         else
             next(null, false)
-    } else {
+    }
+    catch (e) {
         next(null, false)
     }
 })

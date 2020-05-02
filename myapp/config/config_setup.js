@@ -3,7 +3,7 @@ const _ = require('lodash')
 
 // module variables
 const config = require('./config.json')
-const defaultConfig = config.development
+const defaultConfig = config.deployment
 //  const environment = process.env.NODE_ENV || 'deployment'
 // const environmentConfig = config[environment]
 // const finalConfig = _.merge(defaultConfig, environmentConfig)

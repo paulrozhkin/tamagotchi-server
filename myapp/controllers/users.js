@@ -13,7 +13,7 @@ const UserUpdatableInfoModel = require('../models/UserUpdatableInfoModel')
 const restaurantRepository = require('../services/RestaurantRepository')
 
 router.post("/", addUser)
-router.get('/:id', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), getUserById)
+router.get('/:id', passport.authenticate("jwt", {session: false}), getUserById)
 router.get('/', passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), getAllUsers)
 router.put("/:id", passport.authenticate("jwt", {session: false}), updateUser)
 
