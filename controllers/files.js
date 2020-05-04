@@ -29,7 +29,7 @@ async function upload(req, res) {
         let randomFileName = `${uuidv4()}.${extension}`
 
         let fileInfo = new FileModel(undefined, realFileName, extension, randomFileName)
-        await file.mv(`${global.gConfig.files_path}\\${fileInfo.path}`)
+        await file.mv(`${global.gConfig.files_path}/${fileInfo.path}`)
 
         fileInfo = await restaurant.Files.saveFile(fileInfo)
         let returnedValue = {id: fileInfo.id, name: fileInfo.name, type: fileInfo.type}
@@ -42,7 +42,7 @@ async function upload(req, res) {
 async function download(req, res) {
     try {
         const fileInfo = await restaurant.Files.getFile(req.params.id)
-        const filePath = `${global.gConfig.files_path}\\${fileInfo.path}`
+        const filePath = `${global.gConfig.files_path}/${fileInfo.path}`
 
         const isExist = await stat(filePath) // Будет исключение, если не существует.
         await res.download(filePath) // Set disposition and send it.

@@ -10,17 +10,12 @@ const auth = require('./middlewares/auth') // Init auth. Don't delete.
 const fileUpload = require('express-fileupload')
 
 // Middleware error handler for json response
-function handleError(err, req, res, next) {
-    const output = {
-        error: {
-            name: err.name,
-            message: err.message,
-            text: err.toString()
-        }
-    }
-    const statusCode = err.status || 500
-    res.status(statusCode).json(output)
-}
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
+    next();
+});
+
 
 // Passport init for authentication.
 app.use(passport.initialize())
