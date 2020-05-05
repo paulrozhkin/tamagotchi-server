@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
 const passport = require("passport")
 
-router.post("/", passport.authenticate("jwt", {session: false}), getCurrentAccount)
+router.get("/", passport.authenticate("jwt", {session: false}), getCurrentAccount)
 
 async function getCurrentAccount(req, res) {
     try {

@@ -8,15 +8,9 @@ const passport = require("passport")
 const bodyParser = require("body-parser")
 const auth = require('./middlewares/auth') // Init auth. Don't delete.
 const fileUpload = require('express-fileupload')
+const cors = require('cors');
 
-// Middleware error handler for json response
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
-    next();
-});
-
-
+app.use(cors())
 // Passport init for authentication.
 app.use(passport.initialize())
 app.use(bodyParser.urlencoded({
