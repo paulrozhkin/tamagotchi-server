@@ -14,12 +14,12 @@ It also provides an opportunity for the administration to manage the infrastruct
 
 ## Linked Repositories
 - [Web client](https://github.com/paulrozhkin/tamagotchi-web-client)
-- [Android client application](https://github.com/paulrozhkin/RestaurantClientApplication)
+- [Android client application](https://github.com/paulrozhkin/tamagotch-android-client)
 - [Android stuff application](https://github.com/ForsaiR/RestaurantEmployerApplication)
 
 ---
 
-##Documentation
+## Documentation
 - [OpenApi 3 Specification](https://app.swaggerhub.com/apis/paul-rozhkin/itmo-tamagotchi/)
 - [Project architecture](https://docs.google.com/document/d/1enQEfARTvvgzaP4rct-b3Cv25hwk_OPZI0ixIim86kI/edit?usp=sharing)
 
