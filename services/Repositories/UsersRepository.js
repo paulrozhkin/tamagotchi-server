@@ -3,6 +3,7 @@ const UserModel = require('../../models/UserModel')
 const UserModelWithPassword = require('../../models/UserModelWithPassword')
 const UserExistException = require('../../models/Exceptions/UserExistException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
+const format = require('pg-format');
 
 class UsersRepository extends BaseRepository {
 
@@ -26,11 +27,8 @@ class UsersRepository extends BaseRepository {
             throw new NotFoundException()
         }
 
-        const query = `
-        UPDATE ${this._table} SET (login, role, password, avatar, full_name, is_blocked)
-         = ('${updateInfo.login}', '${updateInfo.role}', 
-         '${updateInfo.password}', '${updateInfo.avatar}', '${updateInfo.fullName}', '${updateInfo.isBlocked}') 
-         WHERE id = ${id}`
+        const query = format(`UPDATE ${this._table} SET (login, role, password, avatar, full_name, is_blocked)
+         = (%L) WHERE id = ${id}`, Object.values(updateInfo));
 
         await this._client.query(query)
         return await this.getById(id)
