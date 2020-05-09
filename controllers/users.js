@@ -101,7 +101,7 @@ async function addUser(req, res) {
         const login = jsonBody.login
 
         if (!(login && password)) {
-            res.status(HttpStatus.BAD_REQUEST).json({message: "No login or password"})
+            res.status(HttpStatus.BAD_REQUEST).json(new ErrorMessageModel("No login or password"))
             return
         }
 

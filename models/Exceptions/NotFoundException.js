@@ -1,5 +1,5 @@
-function NotFoundException() {
-    this.message = "Not found in system."
+function NotFoundException(customMessage) {
+    this.message = customMessage ? customMessage : "Not found in system."
     this.toString = function () {
         return this.message
     }

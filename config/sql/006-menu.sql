@@ -9,8 +9,8 @@ create table public.menu
 	restaurant integer not null
 		constraint menu_restaurants_id_fk
 			references public.restaurants,
-	price money not null,
-	in_deleted boolean
+	price integer not null,
+	is_deleted boolean
 );
 
 alter table public.menu owner to postgres;

@@ -3,6 +3,7 @@ const UsersRepository = require('../services/Repositories/UsersRepository')
 const RestaurantsRepository = require('./Repositories/RestaurantsRepository')
 const FilesRepository = require('./Repositories/FilesRepository')
 const DishesRepository = require('./Repositories/DishesRepository')
+const MenuRepository = require('./Repositories/MenuRepository')
 const fs = require('fs')
 
 class RestaurantRepository {
@@ -19,6 +20,8 @@ class RestaurantRepository {
         this.Restaurants = new RestaurantsRepository(this._client, 'public.restaurants')
         this.Files = new FilesRepository(this._client, 'public.files')
         this.Dishes = new DishesRepository(this._client, 'public.dishes')
+
+        this.Menu = new MenuRepository(this._client, 'public.menu', this.Restaurants, this.Dishes)
     }
 
     connect() {
