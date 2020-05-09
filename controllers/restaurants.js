@@ -7,8 +7,8 @@ const HttpStatus = require('http-status-codes')
 const RestaurantCreateModel = require('../models/RestaurantCreateModel')
 const RestaurantUpdatableInfoModel = require('../models/RestaurantUpdatableInfoModel')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
-const RestaurantPropertiesException = require('../models/Exceptions/RestaurantPropertiesException')
-const RestaurantExistException = require('../models/Exceptions/RestaurantExistException')
+const InvalidArgumentException = require('../models/Exceptions/InvalidArgumentException')
+const AlreadyExistException = require('../models/Exceptions/AlreadyExistException')
 const NotFoundException = require('../models/Exceptions/NotFoundException')
 
 const restaurantRepository = require('../services/RestaurantRepository')
@@ -59,7 +59,7 @@ async function createRestaurant(req, res) {
     try {
         const newRestaurant = req.body
         if (!newRestaurant.address || !newRestaurant.positionLatitude || !newRestaurant.positionLongitude) {
-            throw new RestaurantPropertiesException()
+            throw new InvalidArgumentException()
         }
 
         const restaurantCreateInfo = new RestaurantCreateModel(newRestaurant.address,
@@ -70,9 +70,9 @@ async function createRestaurant(req, res) {
         res.status(HttpStatus.CREATED).json(restaurantFullInfo)
 
     } catch (e) {
-        if (e instanceof RestaurantPropertiesException) {
+        if (e instanceof InvalidArgumentException) {
             res.status(HttpStatus.BAD_REQUEST).json(new ErrorMessageModel("Properties not set."))
-        } else if (e instanceof RestaurantExistException) {
+        } else if (e instanceof AlreadyExistException) {
             res.status(HttpStatus.CONFLICT).json(new ErrorMessageModel("Restaurant already exist on this position."))
         } else {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorMessageModel("Internal Server Error. Error: " + e.message))

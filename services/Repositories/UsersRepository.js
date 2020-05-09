@@ -1,7 +1,7 @@
 const BaseRepository = require('./BaseRepository')
 const UserModel = require('../../models/UserModel')
 const UserModelWithPassword = require('../../models/UserModelWithPassword')
-const UserExistException = require('../../models/Exceptions/UserExistException')
+const AlreadyExistException = require('../../models/Exceptions/AlreadyExistException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const format = require('pg-format');
 
@@ -80,7 +80,7 @@ class UsersRepository extends BaseRepository {
         let count = parseInt(newUserResult.rows[0].count)
 
         if (count !== 0) {
-            throw new UserExistException()
+            throw new AlreadyExistException()
         }
     }
 }

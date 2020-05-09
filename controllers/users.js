@@ -5,7 +5,7 @@ const passport = require("passport")
 const ROLES = require('../models/roles')
 const roleChecker = require('../middlewares/role-checker')
 const HttpStatus = require('http-status-codes')
-const UserExistException = require('../models/Exceptions/UserExistException.js')
+const AlreadyExistException = require('../models/Exceptions/AlreadyExistException.js')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
 const NotFoundException = require('../models/Exceptions/NotFoundException')
 const UserUpdatableInfoModel = require('../models/UserUpdatableInfoModel')
@@ -108,7 +108,7 @@ async function addUser(req, res) {
         const newUser = await restaurantRepository.Users.add(login, password)
         res.status(HttpStatus.CREATED).json(newUser)
     } catch (e) {
-        if (e instanceof UserExistException) {
+        if (e instanceof AlreadyExistException) {
             res.status(HttpStatus.CONFLICT).json(new ErrorMessageModel(`User already exist.`))
         } else {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorMessageModel("Internal Server Error. Error: " + e.message))

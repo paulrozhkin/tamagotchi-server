@@ -5,7 +5,7 @@ create table public.dishes
 			primary key,
 	name text not null,
 	photos integer[],
-	description integer
+	description text
 );
 
 alter table public.dishes owner to postgres;

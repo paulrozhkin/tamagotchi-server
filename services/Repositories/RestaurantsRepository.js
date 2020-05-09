@@ -1,6 +1,5 @@
 const BaseRepository = require('./BaseRepository')
-const RestaurantPropertiesException = require('../../models/Exceptions/RestaurantPropertiesException')
-const RestaurantExistException = require('../../models/Exceptions/RestaurantExistException')
+const AlreadyExistException = require('../../models/Exceptions/AlreadyExistException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const RestaurantModel = require('../../models/RestaurantModel')
 
@@ -26,7 +25,7 @@ class RestaurantsRepository extends BaseRepository {
         let count = parseInt(checkExistResult.rows[0].count)
 
         if (count !== 0) {
-            throw new RestaurantExistException()
+            throw new AlreadyExistException()
         }
 
         const query = `

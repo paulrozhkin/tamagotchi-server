@@ -2,6 +2,7 @@ const {Client} = require('pg')
 const UsersRepository = require('../services/Repositories/UsersRepository')
 const RestaurantsRepository = require('./Repositories/RestaurantsRepository')
 const FilesRepository = require('./Repositories/FilesRepository')
+const DishesRepository = require('./Repositories/DishesRepository')
 const fs = require('fs')
 
 class RestaurantRepository {
@@ -17,6 +18,7 @@ class RestaurantRepository {
         this.Users = new UsersRepository(this._client, 'public.users')
         this.Restaurants = new RestaurantsRepository(this._client, 'public.restaurants')
         this.Files = new FilesRepository(this._client, 'public.files')
+        this.Dishes = new DishesRepository(this._client, 'public.dishes')
     }
 
     connect() {

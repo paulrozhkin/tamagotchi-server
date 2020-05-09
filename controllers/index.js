@@ -8,5 +8,6 @@ router.use(`${baseApi}/authenticate`, require('./authenticate'))
 router.use(`${baseApi}/restaurants`, require('./restaurants'))
 router.use(`${baseApi}/files`, require('./files'))
 router.use(`${baseApi}/account`, require('./account'))
+router.use(`${baseApi}/dishes`, require('./dishes'))
 
 module.exports = router
