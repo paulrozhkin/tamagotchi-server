@@ -5,7 +5,7 @@ class UserUpdatableInfoModel {
         this.password = password ? password : null
         this.avatar = avatar ? avatar : currentUser.avatar
         this.fullName = fullName ? fullName : currentUser.fullName
-        this.isBlocked = isBlocked ? isBlocked : currentUser.isBlocked
+        this.isBlocked = isBlocked !== undefined ? isBlocked : currentUser.isBlocked
     }
 }
 
