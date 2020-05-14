@@ -2,6 +2,8 @@
 process.env.NODE_ENV = 'development'
 const config = require('./config/config_setup') // Init config. Don't delete.
 
+const https = require('https');
+const fs = require('fs');
 const express = require('express')
 const app = express()
 const passport = require("passport")
@@ -32,7 +34,12 @@ const restaurantRepository = require('./services/RestaurantRepository');
     restaurantRepository.connect()
 })()
 
+const options = {
+    key: fs.readFileSync(global.gConfig.ssl_key),
+    cert: fs.readFileSync(global.gConfig.ssl_cert)
+}
+
 // Start app
-app.listen(global.gConfig.node_port, function () {
+https.createServer(options, app).listen(global.gConfig.node_port, () => {
     console.log(`${global.gConfig.app_name} listening on port ${global.gConfig.node_port}`)
 })
