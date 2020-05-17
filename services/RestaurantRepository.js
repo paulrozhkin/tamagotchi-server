@@ -4,7 +4,9 @@ const RestaurantsRepository = require('./Repositories/RestaurantsRepository')
 const FilesRepository = require('./Repositories/FilesRepository')
 const DishesRepository = require('./Repositories/DishesRepository')
 const MenuRepository = require('./Repositories/MenuRepository')
+const OrdersRepository = require('./Repositories/OrdersRepository')
 const fs = require('fs')
+const runner = require('node-pg-migrate')
 
 class RestaurantRepository {
     constructor() {
@@ -20,28 +22,35 @@ class RestaurantRepository {
         this.Restaurants = new RestaurantsRepository(this._client, 'public.restaurants')
         this.Files = new FilesRepository(this._client, 'public.files')
         this.Dishes = new DishesRepository(this._client, 'public.dishes')
-
+        this.Orders = new OrdersRepository(this._client, 'public.orders')
         this.Menu = new MenuRepository(this._client, 'public.menu', this.Restaurants, this.Dishes)
     }
 
-    connect() {
-        this._connect(this._client)
+    async connect() {
+        return this._connect(this._client)
     }
 
-    _connect(client) {
-        client.connect(function (err) {
-            if (err) {
-                throw new Error(err)
-            }
+    async _connect(client) {
+        return client.connect()
+    }
+
+    async disconnect() {
+        return this._disconnect(this._client)
+    }
+
+    async _disconnect(client) {
+        return client.end()
+    }
+
+    async migrate() {
+        const config = global.gConfig
+
+        await runner.default({
+            databaseUrl: `postgres://${config.database_user}:${config.database_password}@${config.database_host}:${config.database_port}/${config.database_name}`,
+            direction: "up",
+            dir: 'migrations',
+            migrationsTable: 'pgmigrations'
         })
-    }
-
-    disconnect() {
-        this._disconnect(this._client)
-    }
-
-    _disconnect(client) {
-        client.end()
     }
 
     async createDatabaseIfNotExist() {
@@ -52,9 +61,9 @@ class RestaurantRepository {
             port: global.gConfig.database_port
         })
 
-        this._connect(clientChecker)
-
         try {
+            await this._connect(clientChecker)
+
             const sqlQuery = `select exists(SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('${global.gConfig.database_name}'));`
 
             let isExistResult = await clientChecker.query(sqlQuery)
@@ -76,7 +85,7 @@ class RestaurantRepository {
                     port: global.gConfig.database_port
                 })
 
-                this._connect(clientCreator)
+                await this._connect(clientCreator)
 
                 try {
                     let folderName = process.cwd() + '/config/sql/'
@@ -92,11 +101,11 @@ class RestaurantRepository {
 
                     console.log(`Tables created`)
                 } finally {
-                    this._disconnect(clientCreator)
+                    await this._disconnect(clientCreator)
                 }
             }
         } finally {
-            this._disconnect(clientChecker)
+            await this._disconnect(clientChecker)
         }
 
 

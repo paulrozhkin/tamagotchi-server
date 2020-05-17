@@ -32,7 +32,7 @@ It also provides an opportunity for the administration to manage the infrastruct
 
 ### Setup
 
-- Install [PostgresQL](https://www.postgresql.org/download/) on your machine
+- Install [PostgreSQL](https://www.postgresql.org/download/) on your machine
 
 - Install npm packages in project directory
 
@@ -59,6 +59,12 @@ You can change the selected environment in `config\config_setup.js`
   }
 ```
 
+---
+## Using
+### Tools:
+- Database: PostgreSQL
+    - Database adapter: [node-postgres](https://node-postgres.com/)
+    - For migration uses: [node-pg-migrate](https://salsita.github.io/node-pg-migrate/#/)
 ---
 
 ## Contributing

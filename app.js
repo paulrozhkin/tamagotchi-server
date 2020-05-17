@@ -29,17 +29,22 @@ app.use(require('./controllers'))
 // Connect to database
 const restaurantRepository = require('./services/RestaurantRepository');
 
-(async () => {
+async function initialDatabase() {
     await restaurantRepository.createDatabaseIfNotExist()
-    restaurantRepository.connect()
-})()
-
-const options = {
-    key: fs.readFileSync(global.gConfig.ssl_key),
-    cert: fs.readFileSync(global.gConfig.ssl_cert)
+    await restaurantRepository.migrate()
+    await restaurantRepository.connect()
 }
 
-// Start app
-https.createServer(options, app).listen(global.gConfig.node_port, () => {
-    console.log(`${global.gConfig.app_name} listening on port ${global.gConfig.node_port}`)
+initialDatabase().then(() => {
+    const options = {
+        key: fs.readFileSync(global.gConfig.ssl_key),
+        cert: fs.readFileSync(global.gConfig.ssl_cert)
+    }
+
+    // Start app
+    https.createServer(options, app).listen(global.gConfig.node_port, () => {
+        console.log(`${global.gConfig.app_name} listening on port ${global.gConfig.node_port}`)
+    })
+}).catch(error => {
+    console.log(error)
 })
