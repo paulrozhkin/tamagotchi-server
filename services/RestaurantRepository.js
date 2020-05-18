@@ -5,6 +5,7 @@ const FilesRepository = require('./Repositories/FilesRepository')
 const DishesRepository = require('./Repositories/DishesRepository')
 const MenuRepository = require('./Repositories/MenuRepository')
 const OrdersRepository = require('./Repositories/OrdersRepository')
+const TablesRepository = require('./Repositories/TablesRepository')
 const fs = require('fs')
 const runner = require('node-pg-migrate')
 
@@ -22,6 +23,7 @@ class RestaurantRepository {
         this.Restaurants = new RestaurantsRepository(this._client, 'public.restaurants')
         this.Files = new FilesRepository(this._client, 'public.files')
         this.Dishes = new DishesRepository(this._client, 'public.dishes')
+        this.Tables = new TablesRepository(this._client, 'public.restaurant_tables')
         this.Orders = new OrdersRepository(this._client, 'public.orders')
         this.Menu = new MenuRepository(this._client, 'public.menu', this.Restaurants, this.Dishes)
     }

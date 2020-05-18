@@ -1,6 +1,6 @@
 {
   "name": "myapp",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "",
   "main": "controllers/index.js",
   "scripts": {

@@ -11,5 +11,6 @@ router.use(`${baseApi}/dishes`, require('./dishes'))
 
 router.use(`${baseApi}/restaurants`, require('./restaurants'))
 router.use(`${baseApi}/restaurants`, require('./menu'))
+router.use(`${baseApi}/restaurants`, require('./tables'))
 
 module.exports = router
