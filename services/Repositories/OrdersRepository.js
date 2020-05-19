@@ -2,31 +2,38 @@ const BaseRepository = require('./BaseRepository')
 const InvalidArgumentException = require('../../models/Exceptions/InvalidArgumentException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const format = require('pg-format');
-const MenuItemModel = require('../../models/MenuItemModel')
+const OrderModel = require('../../models/OrderModel')
+const OrdersExtractorService = require('../OrdersExtractorService')
+const FilterToWhereService = require('../FilterToWhereService')
 
 class OrdersRepository extends BaseRepository {
-    constructor(_client, tableName, Restaurants, Dishes) {
+    constructor(_client, tableName, restaurantsRepo, menuRepo, tablesRepo, scoresRepo, performersRepo, usersRepo) {
         super(_client, tableName)
 
-        this.restaurantRepo = Restaurants
-        this.dishesRepo = Dishes
+        this.restaurantRepo = restaurantsRepo
+        this.dishesRepo = menuRepo
+        this.tablesRepo = tablesRepo
+        this.scoresRepo = scoresRepo
+        this.performersRepo = performersRepo
+        this.usersRepo = usersRepo
+
+        this.ordersExtractorService = new OrdersExtractorService(this.performersRepo, this.scoresRepo, this.usersRepo)
     }
 
-    async getAllOrders() {
-        // const result = await this._client.query(`SELECT * FROM ${this._table} WHERE restaurant=${restaurantId};`)
-        //
-        // const menu = []
-        // result.rows.forEach(menuItemRow => {
-        //     menu.push(this._getMenuItemFromRow(menuItemRow))
-        // })
-        //
-        // return menu
+    async getAll(filter) {
+        const query = `SELECT * FROM ${this._table} ${FilterToWhereService.convertFilterToWhere(filter)};`
 
-        return null;
-    }
+        const result = await this._client.query(query)
 
-    async getUserOrders(userId) {
-        return null;
+        const orders = []
+
+        for (const row of result.rows) {
+            const orderDAO = this._getOrderFromRow(row)
+            const fullInfo = await this.ordersExtractorService.getFullOrderInfo(orderDAO)
+            orders.push(fullInfo)
+        }
+
+        return orders
     }
 
     async add(order) {
@@ -79,8 +86,18 @@ class OrdersRepository extends BaseRepository {
         // return await this.getById(restaurantId, id)
     }
 
-    async getById(restaurantId, id) {
-        return null;
+    async getById(id) {
+        const filter = {
+            id: id
+        }
+
+        const order = await this.getAll(filter)
+
+        if (order.length === 0) {
+            throw new NotFoundException()
+        }
+
+        return order[0]
 
         // let result = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}' and restaurant='${restaurantId}';`)
         // if (result.rowCount > 0) {
@@ -91,9 +108,11 @@ class OrdersRepository extends BaseRepository {
     }
 
     _getOrderFromRow(row) {
-        return null;
-        // return new MenuItemModel(row.id, row.dish, row.price, row.is_deleted)
+        return new OrderModel(row.id, row.restaurant, row.client, row.menu, row.reserved_tables,
+            row.comment, row.score, row.visit_time, row.status, row.cooks_status, row.waiters_status)
     }
+
+
 }
 
 module.exports = OrdersRepository

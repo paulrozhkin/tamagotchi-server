@@ -1,8 +1,3 @@
-'use strict';
-
-var utils = require('../utils/writer.js');
-var Orders = require('../service/OrdersService');
-
 const express = require('express')
 const router = express.Router()
 const passport = require("passport")
@@ -19,14 +14,23 @@ const NotFoundException = require('../models/Exceptions/NotFoundException')
 const restaurantRepository = require('../services/RestaurantRepository')
 
 router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createOrder)
-router.get('/', passport.authenticate("jwt", {session: false}), getOrderById)
+router.get('/', passport.authenticate("jwt", {session: false}),
+    roleChecker(ROLES.Manager, ROLES.Cook, ROLES.Waiter), getAllOrders)
 router.get('/:id', passport.authenticate("jwt", {session: false}), getOrderById)
-router.put("/:id", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), updateOrder)
+router.patch("/:id", passport.authenticate("jwt", {session: false}),
+    roleChecker(ROLES.Manager, ROLES.Cook, ROLES.Waiter), patchOrder)
 
 async function getAllOrders(req, res) {
     try {
-        const restaurants = await restaurantRepository.Restaurants.getAll()
-        res.json(restaurants)
+        const filter = {
+            client: req.query.client,
+            status: req.query.status,
+            cooks_status: req.query.cooks_status,
+            waiters_status: req.query.waiters_status,
+        }
+
+        const orders = await restaurantRepository.Orders.getAll(filter)
+        res.json(orders)
     } catch (e) {
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorMessageModel("Internal Server Error. Error: " + e.message))
     }
@@ -35,11 +39,11 @@ async function getAllOrders(req, res) {
 async function getOrderById(req, res) {
     try {
         const id = req.params.id
-        const restaurant = await restaurantRepository.Restaurants.getById(id)
-        res.json(restaurant)
+        const order = await restaurantRepository.Orders.getById(id)
+        res.json(order)
     } catch (e) {
         if (e instanceof NotFoundException) {
-            res.status(HttpStatus.NOT_FOUND).json(new ErrorMessageModel(`Restaurant ${req.params.id} not found.`))
+            res.status(HttpStatus.NOT_FOUND).json(new ErrorMessageModel(`Order ${req.params.id} not found.`))
         } else {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorMessageModel("Internal Server Error. Error: " + e.message))
         }
@@ -71,7 +75,7 @@ async function createOrder(req, res) {
     }
 }
 
-async function updateOrder(req, res) {
+async function patchOrder(req, res) {
     try {
         const id = req.params.id
         const restaurantJson = req.body
