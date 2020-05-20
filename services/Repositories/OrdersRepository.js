@@ -1,5 +1,4 @@
 const BaseRepository = require('./BaseRepository')
-const InvalidArgumentException = require('../../models/Exceptions/InvalidArgumentException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const NoPlaceException = require('../../models/Exceptions/NoPlaceException')
 const IncorrectOrderParametersException = require('../../models/Exceptions/IncorrectOrderParametersException')
@@ -11,6 +10,8 @@ const VisitTimeValidationService = require('../VisitTimeValidationService')
 const OrderStatus = require('../../models/OrderStatus')
 const OrderStaffStatus = require('../../models/OrderStaffStatus')
 const ScoreModel = require('../../models/ScoreModel')
+const ROLES = require('../../models/roles')
+const PerformerCreateModel = require('../../models/PerformerCreateModel')
 
 class OrdersRepository extends BaseRepository {
     constructor(_client, tableName, restaurantsRepo, menuRepo, tablesRepo, scoresRepo, performersRepo, usersRepo) {
@@ -46,7 +47,7 @@ class OrdersRepository extends BaseRepository {
     async add(order) {
         // Создаем время посещения клиента.
         const visitTimeStart = order.visitTime
-        const timeCreated =  new Date()
+        const timeCreated = new Date()
         if (visitTimeStart - timeCreated < 0) {
             throw new IncorrectOrderParametersException("You cannot create a new order with a visit time shorter than the current time.")
         }
@@ -144,24 +145,89 @@ class OrdersRepository extends BaseRepository {
         return this.getById(newOrderId)
     }
 
-    async update(restaurantId, id, updatableMenuItem) {
-        return null;
-        // const menuItemCurrent = await this.getById(restaurantId, id)
-        //
-        // if (updatableMenuItem.price === undefined) {
-        //     updatableMenuItem.price = menuItemCurrent.price
-        // }
-        //
-        // if (updatableMenuItem.isDeleted === undefined) {
-        //     updatableMenuItem.isDeleted = menuItemCurrent.isDeleted
-        // }
-        //
-        // const query = format(`UPDATE ${this._table} SET (price, is_deleted)
-        //     = (%L, %L) WHERE id = ${id}`, updatableMenuItem.price, updatableMenuItem.isDeleted)
-        //
-        // await this._client.query(query)
-        //
-        // return await this.getById(restaurantId, id)
+    async update(id, orderInfo) {
+        const orderCurrent = await this.getById(id)
+
+        if (orderInfo.orderStatus === undefined) {
+            orderInfo.orderStatus = orderCurrent.orderStatus
+        }
+
+        if (orderInfo.orderCooksStatus === undefined) {
+            orderInfo.orderCooksStatus = orderCurrent.orderCooksStatus
+        }
+
+        if (orderInfo.orderWaitersStatus === undefined) {
+            orderInfo.orderWaitersStatus = orderCurrent.orderWaitersStatus
+        }
+
+        try {
+            await this._client.query("BEGIN;")
+
+            if (orderInfo.cooks === undefined) {
+                orderInfo.cooks = orderCurrent.cooks
+            } else {
+                // Удалять нельзя.
+                const missingCooks = orderCurrent.cooks.filter(cookId => !orderInfo.cooks.includes(cookId))
+                if (missingCooks.length !== 0) {
+                    throw new IncorrectOrderParametersException(`Cooks ${missingCooks} cannot be removed from the order.`)
+                }
+
+                // Определяем новых поворов
+                const newCooksIds = orderInfo.cooks.filter(cookId => !orderCurrent.cooks.includes(cookId))
+
+                for (const newCookId of newCooksIds) {
+                    const userInfo = await this.usersRepo.getById(newCookId)
+
+                    if (userInfo.role !== ROLES.Cook) {
+                        throw new IncorrectOrderParametersException(`User № ${newCookId} not a cook`)
+                    }
+
+                    await this.performersRepo.add(new PerformerCreateModel(newCookId, id))
+                }
+            }
+
+            if (orderInfo.waiters === undefined) {
+                orderInfo.waiters = orderCurrent.waiters
+            } else {
+                // Удалять нельзя.
+                const missingWaiters = orderCurrent.waiters.filter(waiterId => !orderInfo.waiters.includes(waiterId))
+                if (missingWaiters.length !== 0) {
+                    throw new IncorrectOrderParametersException(`Waiters ${missingWaiters} cannot be removed from the order.`)
+                }
+
+                // Определяем новых поворов
+                const newWaitersIds = orderInfo.waiters.filter(waiterId => !orderCurrent.waiters.includes(waiterId))
+
+                for (const newWaiterId of newWaitersIds) {
+                    const userInfo = await this.usersRepo.getById(newWaiterId)
+
+                    if (userInfo.role !== ROLES.Waiter) {
+                        throw new IncorrectOrderParametersException(`User № ${newWaiterId} not a waiter`)
+                    }
+
+                    await this.performersRepo.add(new PerformerCreateModel(newWaiterId, id))
+                }
+            }
+
+            if (orderInfo.orderCooksStatus === OrderStaffStatus.Ready &&
+                orderInfo.orderWaitersStatus === OrderStaffStatus.Ready) {
+                orderInfo.orderStatus = OrderStatus.Prepared
+            }
+
+            const {cooks, waiters, ...orderInfoWithoutArray} = orderInfo
+
+            const query = format(`UPDATE ${this._table} SET (status, cooks_status, waiters_status)
+                = (%L) WHERE id = ${id}`, Object.values(orderInfoWithoutArray))
+
+            await this._client.query(query)
+
+            await this._client.query("COMMIT;")
+        } catch (e) {
+            await this._client.query("ROLLBACK;")
+            throw e
+        }
+
+        return await this.getById(id)
     }
 
     async getById(id) {
@@ -175,18 +241,11 @@ class OrdersRepository extends BaseRepository {
         }
 
         return order[0]
-
-        // let result = await this._client.query(`SELECT * FROM ${this._table} WHERE id = '${id}' and restaurant='${restaurantId}';`)
-        // if (result.rowCount > 0) {
-        //     return this._getMenuItemFromRow(result.rows[0])
-        // } else {
-        //     throw new NotFoundException()
-        // }
     }
 
     _getOrderFromRow(row) {
         return new OrderModel(row.id, row.restaurant, row.client, row.number_of_persons, row.menu, row.reserved_tables,
-            row.comment, row.score, row.visit_time, row.status, row.cooks_status, row.waiters_status)
+            row.comment, row.score, row.visit_time, row.status, row.cooks_status, row.waiters_status, row.time_created)
     }
 
 

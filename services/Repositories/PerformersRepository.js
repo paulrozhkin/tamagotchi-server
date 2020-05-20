@@ -20,7 +20,7 @@ class PerformersRepository extends BaseRepository {
     async add(performer) {
         const query = `
         INSERT INTO ${this._table} (performer_id, start_time, order_id)
-         VALUES ('${performer.performerId}', '${Date.now()}', ${performer.orderId}) 
+         VALUES ('${performer.performerId}', '${new Date().toISOString()}', ${performer.orderId}) 
          RETURNING  *`
 
         const result = await this._client.query(query)

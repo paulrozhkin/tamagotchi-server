@@ -5,6 +5,7 @@ const ROLES = require('../models/roles')
 const roleChecker = require('../middlewares/role-checker')
 const HttpStatus = require('http-status-codes')
 const OrderCreateModel = require('../models/OrderCreateModel')
+const OrderUpdatableInfoModel = require('../models/OrderUpdatableInfoModel')
 const ErrorMessageModel = require('../models/ErrorMessageModel')
 const InvalidArgumentException = require('../models/Exceptions/InvalidArgumentException')
 const NoPlaceException = require('../models/Exceptions/NoPlaceException')
@@ -85,16 +86,16 @@ async function createOrder(req, res) {
 async function patchOrder(req, res) {
     try {
         const id = req.params.id
-        const restaurantJson = req.body
-        const restaurant = new RestaurantUpdatableInfoModel(
-            restaurantJson.isParkingPresent, restaurantJson.isCardPaymentPresent,
-            restaurantJson.isWifiPresent, restaurantJson.photos,
-            restaurantJson.isDeleted)
-        const updatedRestaurant = await restaurantRepository.Restaurants.update(id, restaurant)
+        const orderJson = req.body
+        const order = new OrderUpdatableInfoModel(orderJson.orderStatus,
+            orderJson.orderCooksStatus, orderJson.orderWaitersStatus, orderJson.cooks, orderJson.waiters)
+        const updatedRestaurant = await restaurantRepository.Orders.update(id, order)
         res.json(updatedRestaurant)
     } catch (e) {
-        if (e instanceof NotFoundException) {
-            res.status(HttpStatus.NOT_FOUND).json(new ErrorMessageModel(`Restaurant ${req.params.id} not found.`))
+        if (e instanceof IncorrectOrderParametersException) {
+            res.status(HttpStatus.BAD_REQUEST).json(new ErrorMessageModel(e.message))
+        } else if (e instanceof NotFoundException) {
+            res.status(HttpStatus.NOT_FOUND).json(new ErrorMessageModel(`${req.params.id} not found.`))
         } else {
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ErrorMessageModel("Internal Server Error. Error: " + e.message))
         }

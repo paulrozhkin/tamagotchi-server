@@ -1,5 +1,7 @@
 const {FilterModel, FilterItemModel} = require('../models/FilterModel')
 const OrderStatus = require('../models/OrderStatus')
+const OrderStaffStatus = require('../models/OrderStaffStatus')
+const OrderUpdatableInfoModel = require('../models/OrderUpdatableInfoModel')
 
 /**
  * Класс для манипулирования заказами, которые находятся в активном состоянии.
@@ -9,7 +11,7 @@ class OrdersManager {
         this._ordersRepository = ordersRepository
         this._scoresRepository = scoresRepository
         this.isStarted = false
-        this._intervalManagment  = 1000
+        this._intervalManagment = 1000
         this._isManagmentCallbackExecute = false
         this._managerTimer = null
     }
@@ -41,8 +43,7 @@ class OrdersManager {
             await this._staffAlertsManagement()
         } catch (e) {
             console.log(e)
-        }
-        finally {
+        } finally {
             this._isManagmentCallbackExecute = false
         }
     }
@@ -58,10 +59,15 @@ class OrdersManager {
         filter.addFilterItem(new FilterItemModel('status', OrderStatus.PaymentMadeing))
 
         const orders = await this._ordersRepository.getAll(filter)
+        const currentTime = new Date()
 
         for (const order of orders) {
             // Заглушка. Спустя 30 секунд после создания считает заказ оплаченным.
-            // TODO: обновление
+            const timeStamp = (currentTime - order.timeCreated)/ 1000.0
+
+            if (timeStamp > 30) {
+                await this._ordersRepository.update(order.id, new OrderUpdatableInfoModel(OrderStatus.Confirmed))
+            }
         }
     }
 
@@ -79,17 +85,24 @@ class OrdersManager {
 
         const filter = new FilterModel()
         filter.addFilterItem(new FilterItemModel('status', OrderStatus.Confirmed))
-        filter.addFilterItem(
-            new FilterItemModel(
-                `'${filterTime.toISOString()}'::timestamp`,
-                'visit_time',
-                '<@',
-                false))
+        filter.addFilterItem(new FilterItemModel(
+            "visit_time",
+            `tsrange('2000-01-01T00:00:00Z'::timestamp, '${filterTime.toISOString()}'::timestamp)`,
+            "&&",
+            false
+        ))
 
         const orders = await this._ordersRepository.getAll(filter)
 
         for (const order of orders) {
-            // TODO: обновление состояний
+            // Если повороам ничего не надо готовить, то обновлять их не надо.
+            let newCooksStatus = null
+            if (order.orderCooksStatus !== OrderStaffStatus.Ready) {
+                newCooksStatus = OrderStaffStatus.Notifying
+            }
+
+            await this._ordersRepository.update(order.id, new OrderUpdatableInfoModel(
+                OrderStatus.Preparing, newCooksStatus, OrderStaffStatus.Notifying))
         }
     }
 

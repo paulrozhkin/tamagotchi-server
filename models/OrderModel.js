@@ -1,5 +1,5 @@
 class OrderModel {
-    constructor(id, restaurant, client, numberOfPersons, menu, reservedTable, comment, score, visitTime, status, cooksStatus, waitersStatus) {
+    constructor(id, restaurant, client, numberOfPersons, menu, reservedTable, comment, score, visitTime, status, cooksStatus, waitersStatus, timeCreated) {
         this.id = id;
         this.restaurant = restaurant;
         this.numberOfPersons = numberOfPersons
@@ -12,6 +12,8 @@ class OrderModel {
         this.orderStatus = status;
         this.orderCooksStatus = cooksStatus;
         this.orderWaitersStatus = waitersStatus;
+        // Костыль, адаптер считает, что в БД лежит смещение +3 часа.
+        this.timeCreated = new Date(new Date(timeCreated).setHours(timeCreated.getHours() + 3))
     }
 }
 

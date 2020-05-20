@@ -4,7 +4,7 @@
  * @constructor
  */
 function IncorrectOrderParametersException(customMessage) {
-    this.message = customMessage ? customMessage : "Error visit time."
+    this.message = customMessage ? customMessage : "Error order properties."
     this.toString = function () {
         return this.message
     }
