@@ -46,7 +46,8 @@ class OrdersRepository extends BaseRepository {
     async add(order) {
         // Создаем время посещения клиента.
         const visitTimeStart = order.visitTime
-        if (visitTimeStart - new Date() < 0) {
+        const timeCreated =  new Date()
+        if (visitTimeStart - timeCreated < 0) {
             throw new IncorrectOrderParametersException("You cannot create a new order with a visit time shorter than the current time.")
         }
 
@@ -82,10 +83,12 @@ class OrdersRepository extends BaseRepository {
             comment: order.comment,
             numberOfPersons: order.numberOfPersons,
             status: OrderStatus.Created,
-            visit_time: `('${visitTimeStart.toISOString()}', '${visitTimeEnd.toISOString()}')`
+            visit_time: `('${visitTimeStart.toISOString()}', '${visitTimeEnd.toISOString()}')`,
+            time_created: timeCreated.toISOString()
         }
 
-        const query = format(`INSERT INTO ${this._table} (restaurant, client, comment, number_of_persons, status, visit_time)
+        const query = format(`INSERT INTO ${this._table} (restaurant, client, comment,
+         number_of_persons, status, visit_time, time_created)
              VALUES (%L) RETURNING  id`, Object.values(createdFields));
         const resultCreate = await this._client.query(query)
         const newOrderId = resultCreate.rows[0].id
@@ -111,7 +114,7 @@ class OrdersRepository extends BaseRepository {
             throw new NoPlaceException()
         }
 
-        // Бронируем столик
+        // Бронируем столик.
         const queryTimeConfirmed = format(`UPDATE ${this._table} SET reserved_tables
              = '{${format.string(orderTables)}}' WHERE id = ${newOrderId}`)
         await this._client.query(queryTimeConfirmed)
@@ -133,8 +136,8 @@ class OrdersRepository extends BaseRepository {
         } else {
             // Иначе на этом обработка создания завершена и мы просто ждем клиента в ресторане в назначенное время
             // (после подготовки его столика
-            const queryTimeConfirmed = format(`UPDATE ${this._table} SET status
-             = %L WHERE id = ${newOrderId}`, OrderStatus.Confirmed)
+            const queryTimeConfirmed = format(`UPDATE ${this._table} SET (status, cooks_status)
+             = (%L, %L) WHERE id = ${newOrderId}`, OrderStatus.Confirmed, OrderStaffStatus.Ready)
             await this._client.query(queryTimeConfirmed)
         }
 
