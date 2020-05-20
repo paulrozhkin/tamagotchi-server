@@ -8,6 +8,7 @@ const OrdersRepository = require('./Repositories/OrdersRepository')
 const TablesRepository = require('./Repositories/TablesRepository')
 const ScoresRepository = require('./Repositories/ScoresRepository')
 const PerformersRepository = require('./Repositories/PerformersRepository')
+const OrdersManager = require('./OrdersManager')
 const fs = require('fs')
 const runner = require('node-pg-migrate')
 
@@ -32,6 +33,9 @@ class RestaurantRepository {
 
         this.Orders = new OrdersRepository(this._client, 'public.orders',
             this.Restaurants, this.Menu, this.Tables, this.Scores, this.Performers, this.Users)
+
+        this.OrdersManager = new OrdersManager(this.Orders, this.Scores)
+        this.OrdersManager.start()
     }
 
     async connect() {
