@@ -1,4 +1,5 @@
 const ROLES = require("../models/roles");
+const {FilterModel, FilterItemModel} = require("../models/FilterModel")
 
 /**
  * Сервис для формирования полной сущности заказа, который используется в API.
@@ -13,10 +14,12 @@ class OrdersExtractorService {
     async getFullOrderInfo(orderModel) {
 
         // Fix visit time for API. Format to RFC 3339.
-        orderModel.visitTime = orderModel.visitTime.split(',')[0].replace('(', '')
-            .replace(/"/g, '').replace(' ', 'T')
-        orderModel.visitTime = orderModel.visitTime + 'Z'
-
+        orderModel.visitTime = {
+            start: orderModel.visitTime.split(',')[0].replace('(', '')
+                .replace(/"/g, '').replace(' ', 'T') + 'Z',
+            end: orderModel.visitTime.split(',')[1].replace(')', '')
+                .replace(/"/g, '').replace(' ', 'T') + 'Z'
+        }
 
         const {score, ...orderModelWithoutScore} = orderModel
 
@@ -27,11 +30,10 @@ class OrdersExtractorService {
             orderWithAmount.totalAmount = scoreFullInfo.paymentAmount
         }
 
-        const performerFilter = {
-            order_id: orderModel.id
-        }
+        const filter = new FilterModel()
+        filter.addFilterItem(new FilterItemModel("order_id", orderModel.id))
 
-        const performers = await this.performersRepository.getAll(performerFilter)
+        const performers = await this.performersRepository.getAll(filter)
         const fullInfoPerformer = []
         for (const performer of performers) {
             const userInfo = await this.usersRepository.getById(performer.performerId)

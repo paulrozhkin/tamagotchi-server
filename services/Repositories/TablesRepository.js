@@ -4,7 +4,6 @@ const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const format = require('pg-format');
 const TableModel = require('../../models/TableModel')
 
-
 class TablesRepository extends BaseRepository {
 
     async getAll(restaurantId) {

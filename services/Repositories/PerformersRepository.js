@@ -2,12 +2,12 @@ const BaseRepository = require('./BaseRepository')
 const AlreadyExistException = require('../../models/Exceptions/AlreadyExistException')
 const NotFoundException = require('../../models/Exceptions/NotFoundException')
 const PerformerModel = require('../../models/PerformerModel')
-const FilterToWhereService = require('../FilterToWhereService')
+const FilterModel = require('../../models/FilterModel')
 
 class PerformersRepository extends BaseRepository {
 
     async getAll(filter) {
-        const result = await this._client.query(`SELECT * FROM ${this._table} ${FilterToWhereService.convertFilterToWhere(filter)};`)
+        const result = await this._client.query(`SELECT * FROM ${this._table} ${filter.convertFilterToWhere()};`)
 
         const performers = []
         result.rows.forEach(row => {
