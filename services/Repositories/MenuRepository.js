@@ -25,7 +25,6 @@ class MenuRepository extends BaseRepository {
     }
 
     async add(restaurantId, menuItemInfo) {
-
         try {
             await this.restaurantRepo.getById(restaurantId)
         } catch (e) {

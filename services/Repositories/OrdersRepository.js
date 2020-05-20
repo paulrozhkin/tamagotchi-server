@@ -126,8 +126,9 @@ class OrdersRepository extends BaseRepository {
             //  реальноного магазина этого сделать нельзя. Тут нужно добавить валидацию меню,
             //  сумма должна сопадать с той, что находится в токене.
 
-            const queryPaymentMade = format(`UPDATE ${this._table} SET (status, menu)
-             = (%L, '{${format.string(order.menu)}}') WHERE id = ${newOrderId}`, OrderStatus.PaymentMadeing)
+            const queryPaymentMade = format(`UPDATE ${this._table} SET (status, score, menu)
+             = (%L, %L,'{${format.string(order.menu)}}') WHERE id = ${newOrderId}`,
+                OrderStatus.PaymentMadeing, score.id)
             await this._client.query(queryPaymentMade)
         } else {
             // Иначе на этом обработка создания завершена и мы просто ждем клиента в ресторане в назначенное время
