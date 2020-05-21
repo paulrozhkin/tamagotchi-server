@@ -62,7 +62,7 @@ class RestaurantRepository {
         await runner.default({
             databaseUrl: `postgres://${config.database_user}:${config.database_password}@${config.database_host}:${config.database_port}/${config.database_name}`,
             direction: "up",
-            dir: 'migrations',
+            dir: global.gConfig.migrations_directory,
             migrationsTable: 'pgmigrations'
         })
     }
