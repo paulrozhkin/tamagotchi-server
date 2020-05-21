@@ -9,6 +9,7 @@ router.use(`${baseApi}/files`, require('./files'))
 router.use(`${baseApi}/account`, require('./account'))
 router.use(`${baseApi}/dishes`, require('./dishes'))
 router.use(`${baseApi}/orders`, require('./orders'))
+router.use(`${baseApi}/feedback`, require('./feedback'))
 
 router.use(`${baseApi}/restaurants`, require('./restaurants'))
 router.use(`${baseApi}/restaurants`, require('./menu'))
