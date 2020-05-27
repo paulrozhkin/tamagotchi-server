@@ -61,12 +61,17 @@ class OrdersManager {
         const orders = await this._ordersRepository.getAll(filter)
         const currentTime = new Date()
 
+        if (orders.length !== 0) {
+            console.log(`_paymentManagement (current time: ${currentTime.toISOString()}): ${JSON.stringify(orders)}`)
+        }
+
         for (const order of orders) {
             // Заглушка. Спустя 30 секунд после создания считает заказ оплаченным.
             const timeStamp = (currentTime - order.timeCreated)/ 1000.0
 
             if (timeStamp > 30) {
                 await this._ordersRepository.update(order.id, new OrderUpdatableInfoModel(OrderStatus.Confirmed))
+                console.log(`_paymentManagement: ${order.id} - ${OrderStatus.Confirmed}`)
             }
         }
     }
