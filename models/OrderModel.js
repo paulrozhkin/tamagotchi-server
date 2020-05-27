@@ -12,8 +12,7 @@ class OrderModel {
         this.orderStatus = status;
         this.orderCooksStatus = cooksStatus;
         this.orderWaitersStatus = waitersStatus;
-        // Костыль, адаптер считает, что в БД лежит смещение +3 часа.
-        this.timeCreated = new Date(new Date(timeCreated).setHours(timeCreated.getHours() + 3))
+        this.timeCreated = timeCreated
     }
 }
 
