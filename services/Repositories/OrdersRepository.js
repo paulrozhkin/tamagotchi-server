@@ -210,7 +210,8 @@ class OrdersRepository extends BaseRepository {
             }
 
             if (orderInfo.orderCooksStatus === OrderStaffStatus.Ready &&
-                orderInfo.orderWaitersStatus === OrderStaffStatus.Ready) {
+                orderInfo.orderWaitersStatus === OrderStaffStatus.Ready &&
+                orderInfo.orderStatus === OrderStatus.Preparing) {
                 orderInfo.orderStatus = OrderStatus.Prepared
             }
 
