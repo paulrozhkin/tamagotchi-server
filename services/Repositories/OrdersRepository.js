@@ -123,7 +123,11 @@ class OrdersRepository extends BaseRepository {
         // Если пользователь заказал что то в меню, то обрабатываем оплату заказа.
         if (menuItems.length !== 0) {
 
-            let amount = menuItems.reduce((menuItemX, menuItemY) => menuItemX.price + menuItemY.price)
+            let amount = 0
+            for (let item of menuItems) {
+                amount += item.price
+            }
+            
             const score = await this.scoresRepo.add(new ScoreModel(null, order.paymentToken, amount))
 
             // TODO: тут мы отправляем токен в яндекс кассы, чтобы осуществить попку, но пока мы не ИП и у нас нет
