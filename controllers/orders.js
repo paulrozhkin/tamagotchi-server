@@ -16,9 +16,8 @@ const {FilterModel, FilterItemModel} = require('../models/FilterModel')
 
 const restaurantRepository = require('../services/RestaurantRepository')
 
-router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createOrder)
-router.get('/', passport.authenticate("jwt", {session: false}),
-    roleChecker(ROLES.Manager, ROLES.Cook, ROLES.Waiter), getAllOrders)
+router.post("/", passport.authenticate("jwt", {session: false}), createOrder)
+router.get('/', passport.authenticate("jwt", {session: false}), getAllOrders)
 router.get('/:id', passport.authenticate("jwt", {session: false}), getOrderById)
 router.patch("/:id", passport.authenticate("jwt", {session: false}),
     roleChecker(ROLES.Manager, ROLES.Cook, ROLES.Waiter), patchOrder)
