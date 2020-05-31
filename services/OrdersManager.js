@@ -85,8 +85,9 @@ class OrdersManager {
      */
     async _staffAlertsManagement() {
         // Прибавляем один час к текущему времени (время для начала оповещения персонала о начале заказа)
+        // 59 минут, а не 60, т.к в фильтрации БД требуется <`время фильтрации` - 1 минута>
         const currentTime = new Date()
-        const filterTime = new Date(new Date(currentTime).setHours(currentTime.getHours() + 1))
+        const filterTime = new Date(new Date(currentTime).setMinutes(currentTime.getMinutes() + 59))
 
         const filter = new FilterModel()
         filter.addFilterItem(new FilterItemModel('status', OrderStatus.Confirmed))
