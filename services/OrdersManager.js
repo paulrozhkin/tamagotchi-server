@@ -104,6 +104,8 @@ class OrdersManager {
             let newCooksStatus = null
             if (order.orderCooksStatus !== OrderStaffStatus.Ready) {
                 newCooksStatus = OrderStaffStatus.Notifying
+            } else {
+                newCooksStatus = order.orderCooksStatus
             }
 
             await this._ordersRepository.update(order.id, new OrderUpdatableInfoModel(

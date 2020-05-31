@@ -127,10 +127,10 @@ class OrdersRepository extends BaseRepository {
             for (let item of menuItems) {
                 amount += item.price
             }
-            
+
             const score = await this.scoresRepo.add(new ScoreModel(null, order.paymentToken, amount))
 
-            // TODO: тут мы отправляем токен в яндекс кассы, чтобы осуществить попку, но пока мы не ИП и у нас нет
+            // TODO: тут мы отправляем токен в яндекс кассы, чтобы осуществить покупку, но пока мы не ИП и у нас нет
             //  реальноного магазина этого сделать нельзя. Тут нужно добавить валидацию меню,
             //  сумма должна сопадать с той, что находится в токене.
 
