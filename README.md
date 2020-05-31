@@ -16,6 +16,7 @@ It also provides an opportunity for the administration to manage the infrastruct
 - [Web client](https://github.com/paulrozhkin/tamagotchi-web-client)
 - [Android client application](https://github.com/paulrozhkin/tamagotch-android-client)
 - [Android stuff application](https://github.com/ForsaiR/RestaurantEmployerApplication)
+- [Tamagotchi Remote Library](https://github.com/paulrozhkin/tamagotchi-remote-library)
 
 ---
 
