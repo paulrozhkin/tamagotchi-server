@@ -22,7 +22,7 @@ It also provides an opportunity for the administration to manage the infrastruct
 
 ## Documentation
 - [OpenApi 3 Specification](https://app.swaggerhub.com/apis/paul-rozhkin/itmo-tamagotchi/)
-- [Project architecture](https://docs.google.com/document/d/1enQEfARTvvgzaP4rct-b3Cv25hwk_OPZI0ixIim86kI/edit?usp=sharing)
+- [Course Report](https://docs.google.com/document/d/12Z9ZYv56fRUkFW4QWif3M2M6Dqp77mSlRNeztwmCf7Q/edit#)
 
 ---
 
