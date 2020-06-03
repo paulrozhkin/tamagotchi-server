@@ -16,9 +16,9 @@ const {FilterModel, FilterItemModel} = require('../models/FilterModel')
 
 const restaurantRepository = require('../services/RestaurantRepository')
 
-router.post("/", passport.authenticate("jwt", {session: false}), roleChecker(ROLES.Manager), createFeedback)
+router.post("/", passport.authenticate("jwt", {session: false}), createFeedback)
 router.get('/', passport.authenticate("jwt", {session: false}),
-    roleChecker(ROLES.Manager), getAllFeedback)
+    roleChecker(ROLES.Manager, ROLES.Waiter, ROLES.Cook), getAllFeedback)
 
 async function getAllFeedback(req, res) {
     try {
