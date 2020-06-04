@@ -46,7 +46,7 @@ $ npm install
 You can change the selected environment in `config\config_setup.js`
 
 ```$xslt
-"development": {
+"deployment": {
     "config_id": "development",
     "app_name": "Restaurant application",
     "node_port": 3000,
@@ -54,9 +54,12 @@ You can change the selected environment in `config\config_setup.js`
     "database_host": "localhost",
     "database_user": "postgres",
     "database_port": "5432",
+    "migrations_directory": "migrations",
     "database_password": "sql",
     "secretOrKeyJwt": "557C3FC82F68572774A392C865F8B3A32EA49B78B23D52628F46E3E87EC0F3F3",
-    "files_path": "C:\\temp\\tamagotchi_server_files"
+    "files_path": "C:\\temp\\tamagotchi_server_files",
+    "ssl_key": "./config/ssl_test/key.pem",
+    "ssl_cert": "./config/ssl_test/cert.pem"
   }
 ```
 
